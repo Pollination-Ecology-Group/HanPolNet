@@ -7,7 +7,6 @@ editor: visual
 # READ ME
 
 # HanPolNet 
-¨
 
 The goal of HanPolNet is to provide the data and functions necessary to analyze the interannual changes in plant-pollinator interaction networks, as detailed in <Your Manuscript Title>.
 
