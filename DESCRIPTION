@@ -1,0 +1,21 @@
+Package: HanPolNet
+Type: Package
+Title: HanPolNet
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Jakub", "Štenc",
+      email = "jakubstenc@gmail.com",
+      role = c("aut", "cre"),
+      comment = c(ORCID = "YOUR-ORCID-ID")),
+    person(given = "Larry (AI Assistant)",
+           role = "ctb",
+           comment = "Guidance and code suggestions provided by Gemini, a large language model from Google.")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
