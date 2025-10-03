@@ -6,7 +6,7 @@ editor: visual
 
 # READ ME
 
-# HanPolNet 
+# HanPolNet
 
 The goal of HanPolNet is to provide the data and functions necessary to analyze the interannual changes in plant-pollinator interaction networks, as detailed in <Your Manuscript Title>.
 
@@ -15,7 +15,6 @@ The goal of HanPolNet is to provide the data and functions necessary to analyze 
 You can install the development version of HanPolNet from [GitHub](https://github.com) with:
 
 ```{r}
-#| echo: true
 install.packages("devtools")
 devtools::install_github("Pollination-Ecology-Group/HanPolNet") 
 ```
