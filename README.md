@@ -1,14 +1,8 @@
----
-title: "README"
-format: html
-editor: visual
----
-
 # READ ME
 
 # HanPolNet
 
-The goal of HanPolNet is to provide the data and functions necessary to analyze the interannual changes in plant-pollinator interaction networks, as detailed in <Your Manuscript Title>.
+The goal of HanPolNet is to provide the data and functions necessary to analyze the interannual changes in plant-pollinator interaction networks.
 
 ## Installation
 
@@ -68,5 +62,3 @@ This directory is part of the development source code but is **not included** in
 -   `plant_metadata`: A support table with information about each plant species, including their full name and counting method.
 
 ### What functions are included in this package
-
-before merging tables from different years, first check for lower and upper case sensitvyte

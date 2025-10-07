@@ -4,7 +4,12 @@
 \alias{get_plant_data}
 \title{Get and filter plant abundance data}
 \usage{
-get_plant_data(years = NULL, species = NULL, counted_stalks = NULL)
+get_plant_data(
+  years = NULL,
+  species = NULL,
+  counted_stalks = NULL,
+  output = "raw"
+)
 }
 \arguments{
 \item{years}{A numeric vector of years to include. If NULL, all years are returned.}
@@ -14,32 +19,41 @@ get_plant_data(years = NULL, species = NULL, counted_stalks = NULL)
 \item{counted_stalks}{A logical value. If TRUE, returns only species where stalks were counted.
 If FALSE, returns only species where stalks were not counted (presence/absence).
 If NULL (the default), returns all species regardless of counting method.}
+
+\item{output}{A character string specifying the output format. Can be one of
+`"raw"` (the default) or `"standardized"`. See Details section.}
 }
 \value{
-A data.frame containing the filtered plant abundance data.
+A data.frame containing the filtered plant abundance data. If `output = "standardized"`,
+  all abundance values are scaled to a 0-1 range.
 }
 \description{
-This function retrieves the plant abundance data, allowing for filtering by
-year, species, and whether the plant stalks were counted.
+This function retrieves the plant abundance data, allowing for filtering and
+standardization of abundance values to make different survey methods comparable.
 }
 \details{
-The function uses two datasets:
-- `plant_abundance`: A data.frame containing plant counts with columns for year, plot_id, and various plant species.
-- `plant_metadata`: A data.frame containing metadata about each plant species, including whether stalks were counted (1) or not (0).
-The function filters the `plant_abundance` data based on the criteria provided by the user.
-If no filters are provided, the function returns the entire dataset.
-The filtering is done in two main steps:
-1. **Species Filtering**: The function first filters the `plant_metadata` to identify which species to include based on the `species` and `counted_stalks` parameters. It then selects only those species from the `plant_abundance` dataset.
-2. **Year Filtering**: The function then filters the `plant_abundance` dataset by the specified years.
-The final result is a data.frame containing only the rows and columns that match the user's criteria.
-This function is useful for researchers who want to analyze specific subsets of the plant abundance data without having to manually filter the datasets themselves.
-It is important to note that the function assumes the presence of the `plant_abundance` and `plant_metadata` datasets in the environment where it is called.
-Make sure to load the package or source the data before using this function.
+The `output = "standardized"` option is designed to place all abundance
+values onto a common 0-1 scale, which is useful for calculating indices or
+comparing across species surveyed with different methods. The standardization
+is performed as follows:
+
+\itemize{
+  \item **Sublot Counts:** For species measured on the 0-64 presence/absence
+    scale (`stalk_counted == 0`), values are converted to a proportion by
+    dividing by 64. A value of 64 becomes 1.0 (maximum frequency).
+  \item **Stalk Counts:** For species measured by direct stalk counts
+    (`stalk_counted == 1`), values are scaled relative to the maximum abundance
+    observed for that specific species across the entire dataset. Each value is
+    divided by that species' global maximum, resulting in a scale where the
+    highest observed count for that species is 1.0.
+}
 }
 \examples{
-# Get all data for the year 2011
-d11 <- get_plant_data(years = 11)
+# Get raw data for the year 2011
+d11_raw <- get_plant_data(years = 11, output = "raw")
 
-# Get data for Achillea millefolium where stalks were counted
-d_ach <- get_plant_data(species = "Ach_mil", counted_stalks = TRUE)
+# Get standardized data for all years and view summary
+d_std <- get_plant_data(output = "standardized")
+summary(d_std$Ach_mil) # Values will be between 0 and 1
+
 }

@@ -7,7 +7,7 @@ Authors@R: c(
       "Jakub", "Štenc",
       email = "jakubstenc@gmail.com",
       role = c("aut", "cre"),
-      comment = c(ORCID = "YOUR-ORCID-ID")),
+      comment = c(ORCID = "https://orcid.org/0000-0003-0678-8452")),
     person(given = "Larry (AI Assistant)",
            role = "ctb",
            comment = "Guidance and code suggestions provided by Gemini, a large language model from Google.")
