@@ -1,108 +1,123 @@
 ,plant_code,plant_name,stalk_counted
-1,Ach_mil,Achillea millefolium,1
-2,Ach_pta,Achillea ptarmica,1
-3,Alc_sp,Alchemilla species,0
-4,Ana_arv,Anagallis arvensis,1
-5,Ang_syl,Angelica sylvestris,1
-6,Bet_off,Betonica officinalis,1
-7,Bra_nap,Brassica napus,1
-8,Cam_pat,Campanula patula,1
-9,Cam_rot,Campanula rotundifolia,1
-10,Cap_bur,Capsella bursa-pastoris,0
-11,Cen_jac,Centaurea jacea,1
-12,Cer_arv,Cerastium arvense,0
-13,Cer_hol,Cerastium holosteoides,0
-14,Cir_arv,Cirsium arvense,1
-15,Cir_can,Cirsium canum,1
-16,Cir_pal,Cirsium palustre,1
-17,Con_can,Convolvulus arvensis,0
-18,Cre_bie,Crepis biennis,1
-19,Cus_eur,Cuscuta europaea,0
-20,Dau_car,Daucus carota,1
-21,Epi_ang,Epilobium angustifolium,0
-22,Epi_sp,Epilobium species,0
-23,Eup_hel,Euphorbia helioscopia,0
-24,Fal_con,Fallopia convolvulus,0
-25,Gal_alb,Galium album s.lat.,0
-26,Gal_bor,Galium boreale,0
-27,Gal_pal,Galium palustre,0
-28,Gal_qua,Galium species,0
-29,Gal_spe,Galium species,0
-30,Gal_uli,Galium uliginosum,0
-31,Gale_sp,Galeopsis speciosa,0
-32,Gna_syl,Gnaphalium sylvaticum,0
-33,Her_sph,Heracleum sphondylium,1
-34,Hie_lae,Hieracium lachenalii,0
-35,Hie_sp,Hieracium species,0
-36,Hyp_mac,Hypericum maculatum,1
-37,Hyp_per,Hypericum perforatum,1
-38,Hyp_rad,Hypochaeris radicata,1
-39,Lam_alb,Lamium album,0
-40,Lat_pra,Lathyrus pratensis,0
-41,Leo_aut,Leontodon autumnalis,1
-42,Leo_his,Leontodon hispidus,1
-43,Leu_vul,Leucanthemum vulgare agg.,1
-44,Lot_cor,Lotus corniculatus,0
-45,Lyc_eur,Lycopus europaeus,0
-46,Lyc_flo,Lychnis flos-cuculi,0
-47,Lys_num,Lysimachia nummularia,0
-48,Lys_vul,Lysimachia vulgaris,0
-49,Lyt_sal,Lythrum salicaria,1
-50,Mat_dis,Matricaria chamomilla,0
-51,Mat_cha,Matricaria discoidea,0
-52,Med_lup,Medicago lupulina,0
-53,Men_arv,Mentha arvensis,0
-54,Myo_pal,Myosotis palustris agg.,0
-55,Myo_ram,Myosotis ramosissima,0
-56,Odo_ver,Odontites vernus,0
-57,Pep_por,Peplis portula,0
-58,Per_hyd,Persicaria hydropiper,0
-59,Per_mac,Persicaria maculosa,0
-60,Per_min,Persicaria minor,0
-61,Pim_sax,Pimpinella saxifraga s.str.,1
-62,Pla_lan,Plantago lanceolata,0
-63,Pla_maj,Plantago major,0
-64,Pla_med,Plantago media,0
-65,Pol_avi,Polygonum aviculare agg.,0
-66,Pot_ans,Potentilla anserina,0
-67,Pot_ere,Potentilla erecta,0
-68,Pru_vul,Prunella vulgaris,0
-69,Ran_acr,Ranunculus acris,1
-70,Ran_aur,Ranunculus auricomus,0
-71,Ran_fla,Ranunculus flammula,0
-72,Ran_rep,Ranunculus repens,0
-73,Rap_rap,Ranunculus_rapunculoides ,0
-74,Rhi_min,Rhinanthus minor,0
-75,San_off,Sanguisorba officinalis,1
-76,Scu_gal,Scutellaria galericulata,0
-77,Sel_car,Selinum carvifolia,1
-78,Ser_tin,Serratula tinctoria,1
-79,Ste_gra,Stellaria graminea,0
-80,Suc_pra,Succisa pratensis,1
-81,Tri_cam,Trifolium campestre,0
-82,Tri_dub,Trifolium dubium,0
-83,Tri_hyb,Trifolium hybridum,0
-84,Tri_med,Trifolium medium,0
-85,Tri_pra,Trifolium pratense,0
-86,Tri_rep,Trifolium repens,0
-87,Ver_arv,Veronica arvensis,0
-88,Ver_cha,Veronica chamaedrys,0
-89,Ver_scu,Veronica scutellata,0
-90,Ver_ser,Veronica serpirifolia,0
-91,Vic_cra,Vicia cracca agg.,0
-92,Vic_hir,Vicia hirsuta,0
-93,Vic_sep,Vicia sepium,0
-94,Vic_tet,Vicia tetrasperma,0
-95,Vio_arv,Viola arvensis,0
-96,Cer_spe,Cerastium species,0
-97,Pru_gra,Prunella vulgaris,0
-98,Son_arv,Sonchus arvensis,0
-99,Dia_del,Dianthus deltoides,0
-100,Epi_pal,Epilobium palustre,0
-101,Gal_apa,Galium aparine,0
-102,Per_spe,Persicaria species,0
-103,Cen_cyn,Centaurea cyanus,0
-104,Gal_ver,Galium verum,0
-105,Hie_umb,Hieracium umbellatum,0
-106,Per_lap,Persicaria lapathifolia,0
-107,Tri_ino,Tripleurospermum inodorum,0
+1,Ach_mil,Achillea_millefolium,1
+2,Ach_pta,Achillea_ptarmica,1
+3,Alc_sp,Alchemilla_species,0
+4,Ana_arv,Anagallis_arvensis,1
+5,Ang_syl,Angelica_sylvestris,1
+6,Bet_off,Betonica_officinalis,1
+7,Bra_nap,Brassica_napus,1
+8,Cam_pat,Campanula_patula,1
+9,Cam_rot,Campanula_rotundifolia,1
+10,Cap_bur,Capsella_bursa-pastoris,0
+11,Cen_jac,Centaurea_jacea,1
+12,Cer_arv,Cerastium_arvense,0
+13,Cer_hol,Cerastium_holosteoides,0
+14,Cir_arv,Cirsium_arvense,1
+15,Cir_can,Cirsium_canum,1
+16,Cir_pal,Cirsium_palustre,1
+17,Con_can,Convolvulus_arvensis,0
+18,Cre_bie,Crepis_biennis,1
+19,Cus_eur,Cuscuta_europaea,0
+20,Dau_car,Daucus_carota,1
+21,Epi_ang,Epilobium_angustifolium,0
+22,Epi_sp,Epilobium_species,0
+23,Eup_hel,Euphorbia_helioscopia,0
+24,Fal_con,Fallopia_convolvulus,0
+25,Gal_alb,Galium_album_s.lat.,0
+26,Gal_bor,Galium_boreale,0
+27,Gal_pal,Galium_palustre,0
+28,Gal_qua,Galium_species,0
+29,Gal_spe,Galium_species,0
+30,Gal_uli,Galium_uliginosum,0
+31,Gale_sp,Galeopsis_speciosa,0
+32,Gna_syl,Gnaphalium_sylvaticum,0
+33,Her_sph,Heracleum_sphondylium,1
+34,Hie_lae,Hieracium_lachenalii,0
+35,Hie_sp,Hieracium_species,0
+36,Hyp_mac,Hypericum_maculatum,1
+37,Hyp_per,Hypericum_perforatum,1
+38,Hyp_rad,Hypochaeris_radicata,1
+39,Lam_alb,Lamium_album,0
+40,Lat_pra,Lathyrus_pratensis,0
+41,Leo_aut,Leontodon_autumnalis,1
+42,Leo_his,Leontodon_hispidus,1
+43,Leontodon_sp,Leucanthemum_vulgare_agg.,1
+44,Lot_cor,Lotus_corniculatus,0
+45,Lyc_eur,Lycopus_europaeus,0
+46,Lyc_flo,Lychnis_flos-cuculi,0
+47,Lys_num,Lysimachia_nummularia,0
+48,Lys_vul,Lysimachia_vulgaris,0
+49,Lyt_sal,Lythrum_salicaria,1
+50,Mat_dis,Matricaria_chamomilla,0
+51,Mat_cha,Matricaria_discoidea,0
+52,Med_lup,Medicago_lupulina,0
+53,Men_arv,Mentha_arvensis,0
+54,Myo_pal,Myosotis_palustris_agg.,0
+55,Myo_ram,Myosotis_ramosissima,0
+56,Odo_ver,Odontites_vernus,0
+57,Pep_por,Peplis_portula,0
+58,Per_hyd,Persicaria_hydropiper,0
+59,Per_mac,Persicaria_maculosa,0
+60,Per_min,Persicaria_minor,0
+61,Pim_sax,Pimpinella_saxifraga_s.str.,1
+62,Pla_lan,Plantago_lanceolata,0
+63,Pla_maj,Plantago_major,0
+64,Pla_med,Plantago_media,0
+65,Pol_avi,Polygonum_aviculare_agg.,0
+66,Pot_ans,Potentilla_anserina,0
+67,Pot_ere,Potentilla_erecta,0
+68,Pru_vul,Prunella_vulgaris,0
+69,Ran_acr,Ranunculus_acris,1
+70,Ran_aur,Ranunculus_auricomus,0
+71,Ran_fla,Ranunculus_flammula,0
+72,Ran_rep,Ranunculus_repens,0
+73,Rap_rap,Ranunculus_rapunculoides_,0
+74,Rhi_min,Rhinanthus_minor,0
+75,San_off,Sanguisorba_officinalis,1
+76,Scu_gal,Scutellaria_galericulata,0
+77,Sel_car,Selinum_carvifolia,1
+78,Ser_tin,Serratula_tinctoria,1
+79,Ste_gra,Stellaria_graminea,0
+80,Suc_pra,Succisa_pratensis,1
+81,Tri_cam,Trifolium_campestre,0
+82,Tri_dub,Trifolium_dubium,0
+83,Tri_hyb,Trifolium_hybridum,0
+84,Tri_med,Trifolium_medium,0
+85,Tri_pra,Trifolium_pratense,0
+86,Tri_rep,Trifolium_repens,0
+87,Ver_arv,Veronica_arvensis,0
+88,Ver_cha,Veronica_chamaedrys,0
+89,Ver_scu,Veronica_scutellata,0
+90,Ver_ser,Veronica_serpirifolia,0
+91,Vic_cra,Vicia_cracca_agg.,0
+92,Vic_hir,Vicia_hirsuta,0
+93,Vic_sep,Vicia_sepium,0
+94,Vic_tet,Vicia_tetrasperma,0
+95,Vio_arv,Viola_arvensis,0
+96,Cer_spe,Cerastium_species,0
+97,Pru_gra,Prunella_vulgaris,0
+98,Son_arv,Sonchus_arvensis,0
+99,Dia_del,Dianthus_deltoides,0
+100,Epi_pal,Epilobium_palustre,0
+101,Gal_apa,Galium_aparine,0
+102,Per_spe,Persicaria_species,0
+103,Cen_cyn,Centaurea_cyanus,0
+104,Gal_ver,Galium_verum,0
+105,Hie_umb,Hieracium_umbellatum,0
+106,Per_lap,Persicaria_lapathifolia,0
+107,Tri_ino,Tripleurospermum_inodorum,0
+108,Not_ing,nic,0
+,Gal_spe,Galium_sp,
+,indet,indet,
+,Jun_spe,Juncus_sp,
+,Kna_arv,Kanutia_arvensis,
+,Leo_spe,Leontodon_sp,
+,Lyc_flo,Lychnis_floscuculi,
+,Myo_spe,Myosotis_sp,
+,Per_hyd,Per_pin,
+,Per_spe,Persicaria_sp,
+,Pol_avi,Pol_sp,
+,Sen_aqu,Senecio_aquatica,
+,Ste_gra,Stellaria_sp,
+,Tri_arv,Trifolium_arvense,
+,Tri_spe,UNDETERMINED_trifolium,

@@ -21,6 +21,7 @@
 #' }
 #'
 #' @param years A numeric vector of years to include. If NULL, all years are returned.
+#' @param plot_id A numeric vector of plot IDs to include. If NULL, all plots are returned.
 #' @param species A character vector of species codes to include. If NULL, all species are returned.
 #' @param counted_stalks A logical value. If TRUE, returns only species where stalks were counted.
 #' If FALSE, returns only species where stalks were not counted (presence/absence).
@@ -34,74 +35,59 @@
 #' @export
 #'
 #' @examples
-#' # Get raw data for the year 2011
-#' d11_raw <- get_plant_data(years = 11, output = "raw")
+#' # Get standardized data for plots 1 through 5 in the year 2022
+#' d_subset <- get_plant_data(years = 22, plot_id = 1:5, output = "standardized")
 #'
-#' # Get standardized data for all years and view summary
-#' d_std <- get_plant_data(output = "standardized")
-#' summary(d_std$Ach_mil) # Values will be between 0 and 1
-#'
-get_plant_data <- function(years = NULL, species = NULL, counted_stalks = NULL, output = "raw") {
+get_plant_data <- function(years = NULL, plot_id = NULL, species = NULL, counted_stalks = NULL, output = "raw") {
 
-  # --- Initial Filtering Logic (same as before) ---
+  # Start with the full dataset
   filtered_abundance <- plant_abundance
-  target_species <- plant_metadata
 
+  # --- Initial Species Filtering ---
+  # (This part is unchanged)
+  target_species <- plant_metadata
   if (!is.null(counted_stalks)) {
     count_value <- as.integer(counted_stalks)
     target_species <- target_species[target_species$stalk_counted == count_value, ]
   }
-
   if (!is.null(species)) {
     target_species <- target_species[target_species$plant_code %in% species, ]
   }
-
   species_to_keep <- target_species$plant_code
-
-  # Ensure we only try to select columns that actually exist
   species_in_data <- intersect(species_to_keep, colnames(filtered_abundance))
-
-  if (length(species_in_data) > 0) {
+  if (length(species_in_data) > 0 || !is.null(species) || !is.null(counted_stalks)) {
     filtered_abundance <- filtered_abundance[, c("year", "plot_id", species_in_data)]
   }
 
+  # --- Row Filtering ---
   if (!is.null(years)) {
     filtered_abundance <- filtered_abundance[filtered_abundance$year %in% years, ]
   }
+  # --- NEW: Add filtering for plot_id ---
+  if (!is.null(plot_id)) {
+    filtered_abundance <- filtered_abundance[filtered_abundance$plot_id %in% plot_id, ]
+  }
 
-  # --- NEW: Standardization Logic ---
-  # Check if the user requested standardized output
+  # --- Standardization Logic ---
+  # (This part is unchanged)
   if (output == "standardized") {
-
-    # 1. Identify which columns in our current data frame need which treatment
-    all_species_cols <- colnames(filtered_abundance)[-(1:2)] # Get all species columns
-
+    all_species_cols <- colnames(filtered_abundance)[-(1:2)]
     sublot_species <- plant_metadata$plant_code[plant_metadata$stalk_counted == 0]
     stalk_species <- plant_metadata$plant_code[plant_metadata$stalk_counted == 1]
-
     cols_to_scale_sublot <- intersect(all_species_cols, sublot_species)
     cols_to_scale_stalk <- intersect(all_species_cols, stalk_species)
-
-    # 2. Scale the sublot columns (divide by 64)
     if (length(cols_to_scale_sublot) > 0) {
       filtered_abundance[, cols_to_scale_sublot] <- filtered_abundance[, cols_to_scale_sublot] / 64
     }
-
-    # 3. Scale the stalk count columns (divide by global max for each species)
     if (length(cols_to_scale_stalk) > 0) {
       for (col in cols_to_scale_stalk) {
-        # IMPORTANT: We calculate max from the *original*, full dataset
-        # to ensure the scaling is consistent regardless of filtering.
         max_val <- max(plant_abundance[[col]], na.rm = TRUE)
-
-        # Avoid dividing by zero if a species was never observed
         if (max_val > 0) {
           filtered_abundance[[col]] <- filtered_abundance[[col]] / max_val
         }
       }
     }
   } else if (output != "raw") {
-    # A friendly warning if the user enters an invalid option
     warning("Invalid `output` argument. Returning 'raw' data.")
   }
 

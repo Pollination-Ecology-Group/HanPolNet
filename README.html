@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -34,6 +68,35 @@ ul.task-list li input[type="checkbox"] {
 <link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="README_files/libs/bootstrap/bootstrap-34aba67078196970c8456e5a84ce4fc5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -71,20 +134,76 @@ ul.task-list li input[type="checkbox"] {
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
 <p>You can install the development version of HanPolNet from <a href="https://github.com">GitHub</a> with:</p>
-<pre><code>``` r
-install.packages("devtools")
-devtools::install_github("your-github-username/HanPolNet") 
-</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Installing package into '/home/meow/R/x86_64-pc-linux-gnu-library/4.5'
+(as 'lib' is unspecified)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"Pollination-Ecology-Group/HanPolNet"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Downloading GitHub repo Pollination-Ecology-Group/HanPolNet@HEAD</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>── R CMD build ─────────────────────────────────────────────────────────────────
+* checking for file ‘/tmp/RtmpVALZ96/remotes1814377995d66/Pollination-Ecology-Group-HanPolNet-45c359d/DESCRIPTION’ ... OK
+* preparing ‘HanPolNet’:
+* checking DESCRIPTION meta-information ... OK
+Warning: /tmp/RtmpZPChXB/Rbuild181b949a4116a/HanPolNet/man/calculate_hca.Rd:35: unknown macro '\sum'
+Warning: /tmp/RtmpZPChXB/Rbuild181b949a4116a/HanPolNet/man/calculate_hca.Rd:35: unknown macro '\times'
+Warning: /tmp/RtmpZPChXB/Rbuild181b949a4116a/HanPolNet/man/calculate_hca.Rd:35: unknown macro '\text'
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+  NB: this package now depends on R (&gt;= 3.5.0)
+  WARNING: Added dependency on R &gt;= 3.5.0 because serialized objects in
+  serialize/load version 3 cannot be read in older versions of R.
+  File(s) containing such objects:
+    ‘HanPolNet/data/plant_abundance.rda’
+    ‘HanPolNet/data/plant_metadata.rda’
+Warning: /tmp/RtmpZPChXB/Rbuild181b949a4116a/HanPolNet/man/calculate_hca.Rd:35: unknown macro '\sum'
+Warning: /tmp/RtmpZPChXB/Rbuild181b949a4116a/HanPolNet/man/calculate_hca.Rd:35: unknown macro '\times'
+Warning: /tmp/RtmpZPChXB/Rbuild181b949a4116a/HanPolNet/man/calculate_hca.Rd:35: unknown macro '\text'
+* building ‘HanPolNet_0.1.0.tar.gz’
+Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :
+  storing paths of more than 100 bytes is not portable:
+  ‘HanPolNet/README_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css’</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Installing package into '/home/meow/R/x86_64-pc-linux-gnu-library/4.5'
+(as 'lib' is unspecified)</code></pre>
+</div>
+</div>
 </section>
 <section id="citation" class="level2">
 <h2 class="anchored" data-anchor-id="citation">Citation</h2>
 <p>If you use this package or its data in your research, please cite it as:</p>
-<pre><code># To get the most up-to-date citation information
-citation("HanPolNet")</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">citation</span>(<span class="st">"HanPolNet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>To cite package 'HanPolNet' in publications use:
+
+  Štenc J (2025). _HanPolNet: HanPolNet_. R package version 0.1.0,
+  commit 45c359d5544815157924157f1be2ecc54bf90caa,
+  &lt;https://github.com/Pollination-Ecology-Group/HanPolNet&gt;.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {HanPolNet: HanPolNet},
+    author = {Jakub Štenc},
+    year = {2025},
+    note = {R package version 0.1.0, commit 45c359d5544815157924157f1be2ecc54bf90caa},
+    url = {https://github.com/Pollination-Ecology-Group/HanPolNet},
+  }</code></pre>
+</div>
+</div>
 </section>
 <section id="authors" class="level2">
 <h2 class="anchored" data-anchor-id="authors">Authors</h2>
 <p>This package was developed by Jakub Štenc with guidance and contributions from Larry (AI Assistant), a persona of Gemini, a large language model from Google.</p>
+</section>
+<section id="purpose" class="level2">
+<h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
 <p>This package serves to combine data collected during decade and half long lasting project called “Opylovači” now operated by Pollination Ecology Group and Flower Ecology Lab based at the Departments of Zoology and Botany, Faculty of Science, Charles University (Praha, CZE).</p>
 </section>
 <section id="how-does-this-package-works" class="level2">
@@ -121,6 +240,24 @@ citation("HanPolNet")</code></pre>
 <section id="what-functions-are-included-in-this-package" class="level3">
 <h3 class="anchored" data-anchor-id="what-functions-are-included-in-this-package">What functions are included in this package</h3>
 <p>before merging tables from different years, first check for lower and upper case sensitvyte</p>
+</section>
+</section>
+<section id="calculating-the-heterospecific-co-flowering-abundance-hca-index" class="level2">
+<h2 class="anchored" data-anchor-id="calculating-the-heterospecific-co-flowering-abundance-hca-index">Calculating the Heterospecific Co-flowering Abundance (HCA) Index</h2>
+<p>The primary analytical function in this package is <code>calculate_hca()</code>. It is designed to compute a community-level index of heterospecific plant abundance for each unique plot and year.</p>
+<section id="the-formula" class="level3">
+<h3 class="anchored" data-anchor-id="the-formula">The Formula</h3>
+<p>The function implements the following formula:</p>
+<p><span class="math display">\[HCA_{y,p} = \sum_{i=1}^{N_{co}} w_i \times \text{Abundance}_i\]</span></p>
+<p>Where: * <strong><span class="math inline">\(HCA_{y,p}\)</span></strong> is the Heterospecific Co-flowering Abundance for a given year <code>y</code> and plot <code>p</code>. * <strong><span class="math inline">\(N_{co}\)</span></strong> is the number of co-flowering heterospecific species being considered (i.e., all species except the <code>focal_species</code>). * <strong><span class="math inline">\(w_i\)</span></strong> is a weighting factor for each species <code>i</code>. By default, this is set to 1 for all species. * <strong><span class="math inline">\(\text{Abundance}_i\)</span></strong> is the standardized abundance of species <code>i</code>. This requires that the input data be on a common scale. The <code>get_plant_data(output = "standardized")</code> function is designed specifically to prepare data for this calculation.</p>
+</section>
+<section id="interpreting-the-hca-value" class="level3">
+<h3 class="anchored" data-anchor-id="interpreting-the-hca-value">Interpreting the HCA Value</h3>
+<p>The HCA is an <strong>unbounded cumulative score</strong>, not a proportion. It represents the total standardized abundance of neighboring plants.</p>
+<ul>
+<li>A value of <strong>0</strong> indicates that no co-flowering heterospecifics were present in the plot.</li>
+<li>A <strong>higher value</strong> indicates a greater cumulative abundance of co-flowering partners. For example, with default weights of 1, an HCA of 2.5 could mean that five different species were present, each at 50% of its maximum observed abundance (5 * 0.5), or a different combination of fewer, more abundant species.</li>
+</ul>
 </section>
 </section>
 </section>

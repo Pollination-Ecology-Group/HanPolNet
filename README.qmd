@@ -71,3 +71,29 @@ This directory is part of the development source code but is **not included** in
 ### What functions are included in this package
 
 before merging tables from different years, first check for lower and upper case sensitvyte
+
+
+
+
+## Calculating the Heterospecific Co-flowering Abundance (HCA) Index
+
+The primary analytical function in this package is `calculate_hca()`. It is designed to compute a community-level index of heterospecific plant abundance for each unique plot and year.
+
+### The Formula
+
+The function implements the following formula:
+
+$$HCA_{y,p} = \sum_{i=1}^{N_{co}} w_i \times \text{Abundance}_i$$
+
+Where:
+* **$HCA_{y,p}$** is the Heterospecific Co-flowering Abundance for a given year `y` and plot `p`.
+* **$N_{co}$** is the number of co-flowering heterospecific species being considered (i.e., all species except the `focal_species`).
+* **$w_i$** is a weighting factor for each species `i`. By default, this is set to 1 for all species.
+* **$\text{Abundance}_i$** is the standardized abundance of species `i`. This requires that the input data be on a common scale. The `get_plant_data(output = "standardized")` function is designed specifically to prepare data for this calculation.
+
+### Interpreting the HCA Value
+
+The HCA is an **unbounded cumulative score**, not a proportion. It represents the total standardized abundance of neighboring plants.
+
+* A value of **0** indicates that no co-flowering heterospecifics were present in the plot.
+* A **higher value** indicates a greater cumulative abundance of co-flowering partners. For example, with default weights of 1, an HCA of 2.5 could mean that five different species were present, each at 50% of its maximum observed abundance (5 * 0.5), or a different combination of fewer, more abundant species.

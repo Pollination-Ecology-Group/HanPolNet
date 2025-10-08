@@ -6,6 +6,7 @@
 \usage{
 get_plant_data(
   years = NULL,
+  plot_id = NULL,
   species = NULL,
   counted_stalks = NULL,
   output = "raw"
@@ -13,6 +14,8 @@ get_plant_data(
 }
 \arguments{
 \item{years}{A numeric vector of years to include. If NULL, all years are returned.}
+
+\item{plot_id}{A numeric vector of plot IDs to include. If NULL, all plots are returned.}
 
 \item{species}{A character vector of species codes to include. If NULL, all species are returned.}
 
@@ -49,11 +52,7 @@ is performed as follows:
 }
 }
 \examples{
-# Get raw data for the year 2011
-d11_raw <- get_plant_data(years = 11, output = "raw")
-
-# Get standardized data for all years and view summary
-d_std <- get_plant_data(output = "standardized")
-summary(d_std$Ach_mil) # Values will be between 0 and 1
+# Get standardized data for plots 1 through 5 in the year 2022
+d_subset <- get_plant_data(years = 22, plot_id = 1:5, output = "standardized")
 
 }

@@ -32,7 +32,7 @@ Calculation of HCA
 The HCA index is calculated for each row (a unique plot-year combination) using
 the formula:
 
-$$HCA_{y,p} = \sum_{i=1}^{N_{co}} w_i \times \text{Abundance}_i$$
+$$HCA_{y,p} = sum_{i=1}^{N_{co}} w_i times text{Abundance}_i$$
 
 Where:
 \itemize{
