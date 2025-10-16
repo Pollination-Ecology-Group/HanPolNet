@@ -47,3 +47,19 @@
 #'   \item{shade}{A flag indicating if the observation was in the shade.}
 #' }
 "interaction_data"
+#' Pollinator Metadata
+#'
+#' A support table providing taxonomic and trait information for pollinator species
+#' observed in the interaction data.
+#'
+#' @format A data frame with one row per unique pollinator taxon.
+#' \describe{
+#'   \item{pollinator_id}{The unique identifier for the pollinator taxon, linking to `interaction_data`.}
+#'   \item{verified}{A logical flag (`TRUE`/`FALSE`) indicating if the taxonomic identification has been verified at least once in the raw data.}
+#'   \item{is_pollinator}{A logical flag (`TRUE`/`FALSE`) classifying whether the taxon is considered an effective pollinator.}
+#'   \item{order}{The taxonomic order of the pollinator (e.g., "Hymenoptera", "Diptera").}
+#'   \item{family}{Placeholder column for the taxonomic family.}
+#'   \item{genus}{Placeholder column for the taxonomic genus.}
+#'   \item{notes}{Placeholder column for any additional notes.}
+#' }
+"pollinator_metadata"

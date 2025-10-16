@@ -37,7 +37,7 @@ This package serves to combine data collected during decade and half long lastin
 
 ### How Data is Organized in This Package
 
-To ensure transparency and reproducibility, the data in this package follows a standard R package workflow, separating the raw source data from the clean, ready-to-use data. Think of it like a kitchen and a pantry.
+interaction_dat To ensure transparency and reproducibility, the data in this package follows a standard R package workflow, separating the raw source data from the clean, ready-to-use data. Think of it like a kitchen and a pantry.
 
 #### `data/` (The Pantry)
 
@@ -117,9 +117,29 @@ A data frame containing individual observations of pollinator visits to plants. 
 
 ------------------------------------------------------------------------
 
+#### `pollinator_metadata`
+
+A support table that provides taxonomic classification and functional trait information for each unique pollinator taxon found in the `interaction_data` dataset.
+
+-   `pollinator_id`: The unique identifier for the pollinator taxon, used to link with the `interaction_data` table.
+
+-   `verified`: A logical flag (`TRUE`/`FALSE`) indicating if the taxonomic identification of the pollinator has been verified at least once in the raw data.
+
+-   `is_pollinator`: A logical flag (`TRUE`/`FALSE`) classifying whether the taxon is considered an effective pollinator. This is based on general ecological knowledge (e.g., bees are `TRUE`, ants are `FALSE`). Larval stages are automatically classified as `FALSE`.
+
+-   `order`: The taxonomic order of the pollinator (e.g., "Hymenoptera", "Diptera").
+
+-   `family`: A placeholder column for the taxonomic family, intended for future manual curation.
+
+-   `genus`: A placeholder column for the taxonomic genus, intended for future manual curation.
+
+-   `notes`: A placeholder column for any additional notes.
+
+------------------------------------------------------------------------
+
 ## Core Functions
 
-### Data Access and Standardization: `get_plant_data()`
+### Plant Data Access and Standardization: `get_plant_data()`
 
 The primary function for accessing data in this package is `get_plant_data()`. It allows you to retrieve the plant abundance dataset with powerful options for filtering and preprocessing.
 
@@ -140,6 +160,38 @@ To make these two scales comparable for analysis, the standardization process co
 -   **Stalk Counts** are scaled relative to the maximum abundance observed for that specific species across the entire dataset. Each value is **divided by that species' global maximum**, resulting in a scale where the highest observed count for that species is 1.0.
 
 By default (`output = "raw"`), the function returns the original, unstandardized values.
+
+------------------------------------------------------------------------
+
+### Interaction Data: `get_interaction_data()`
+
+This is the main function for accessing and preparing the plant-pollinator interaction data for analysis. It allows for detailed filtering based on a variety of parameters and can automatically standardize interaction counts by sampling effort.
+
+#### Filtering
+
+The function can filter the interaction dataset by any combination of the following arguments:
+
+-   `years`, `plot_id`, `plant_species`, `pollinator_species`
+
+-   `experiment_run` (to isolate specific experimental setups)
+
+-   `start_time` and `end_time` (to select interactions within a specific time window)
+
+-   `verified_taxa` (to select only taxonomically verified pollinators)
+
+-   `is_pollinator` (to select only taxa classified as true pollinators)
+
+-   `remove_zeros` (to exclude records where no interaction was observed, i.e., "nothing" was recorded)
+
+#### Standardization
+
+A key feature is the `standardize = TRUE` argument. When used, the function calculates and adds two new columns to the dataset:
+
+1.  **`n_visits`**: This is the **sampling effort**. It represents the total number of unique sampling visits made to a specific plot within a specific `experiment_run`. This value is calculated from the *entire, unfiltered* dataset to ensure it is a true measure of effort.
+
+2.  **`rate`**: This is the **standardized interaction rate**, calculated for each row as `interaction_count / n_visits`. This value represents the number of observed interactions per sampling visit, making it comparable across plots and years with different sampling intensities.
+
+If `standardize = FALSE` (the default), the function returns only the raw `interaction_count`.
 
 ------------------------------------------------------------------------
 

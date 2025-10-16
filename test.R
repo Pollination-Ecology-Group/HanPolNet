@@ -4,6 +4,7 @@
 
 
 library("HanPolNet")
+library("ggplot2")
 ?HanPolNet
 
 # Check if the plant_abundance data is available and looks right
@@ -153,4 +154,250 @@ hca_results <- calculate_hca(std_data, focal_species = "Suc_pra")
 trends_plot <- plot_abundance_trends(hca_results, std_data, focal_species = "Suc_pra", add_stats = FALSE)
 plot_abundance_trends
 print(trends_plot)
+
+
+
+
+
+# --- Verification Script ---
+# This script verifies that the pollinator_id in the clean dataset
+# 1. Load both the clean and raw datasets
+load("data/interaction_data.rda")
+raw_interactions <- read.csv("data-raw/jine_ctverce_spojene_11_24_vz_20250515 - jine_ctverce_spojene_11_24_vz_20250409.csv")
+
+# 2. Find a suitable row for testing
+# We're looking for the first row where druh_final is empty but druhO_opraveno is not.
+test_index <- which(
+  (is.na(raw_interactions$druh_final) | raw_interactions$druh_final == "") &
+    (raw_interactions$druhO_opraveno != "" & !is.na(raw_interactions$druhO_opraveno))
+)[1]
+
+
+# 3. Run the check and print a report
+if (!is.na(test_index)) {
+  # Get the key identifiers from that row in the RAW data
+  raw_sampling_id <- raw_interactions$id_i[test_index]
+  expected_id <- as.character(raw_interactions$druhO_opraveno[test_index])
+
+  # Find the matching row in the CLEAN data using the unique sampling_id
+  clean_row <- interaction_data[interaction_data$sampling_id == raw_sampling_id, ]
+  actual_id <- as.character(clean_row$pollinator_id)
+
+  # Print a summary
+  cat("--- Testing Pollinator ID Fallback ---\n")
+  cat("Found a test case in raw data row:", test_index, "\n")
+  cat("Sampling ID:", raw_sampling_id, "\n")
+  cat("  - Raw 'druh_final' was empty.\n")
+  cat("  - Expected ID from 'druhO_opraveno':", expected_id, "\n")
+  cat("  - Actual ID in final 'pollinator_id':", actual_id, "\n\n")
+
+  # The final check
+  if (identical(actual_id, expected_id)) {
+    cat("✅ TEST PASSED: The pollinator ID was correctly filled in.\n")
+  } else {
+    cat("❌ TEST FAILED: The IDs do not match.\n")
+  }
+
+} else {
+  cat("Could not find a suitable test case in the raw data.\n")
+}
+
+
+
+## Testing the interaction data retrieval function ####
+# Example usage of get_interaction_data()
+# Example 1: Get all interactions with Apis mellifera on Succisa pratensis in 2022
+pollinators_on_succisa <- get_interaction_data(
+is_pollinator = TRUE
+)
+head(pollinators_on_succisa)
+
+sort(table(pollinators_on_succisa$pollinator_id))
+
+
+# Example 2: Get interactions from true pollinators, but only those that are NOT verified
+unverified_pollinators <- get_interaction_data(
+  is_pollinator = TRUE,
+  verified_taxa = FALSE
+)
+head(unverified_pollinators)
+
+# Example 3: Get all interactions that occurred in the morning (e.g., before 11:00 AM)
+morning_interactions <- get_interaction_data(end_time = "11:00")
+summary(morning_interactions$hour) # Should show hours are all less than 11
+
+# Example 4: Get all interactions involving a specific pollinator species (e.g., "Aglais_io")
+get_interaction_data(
+  is_pollinator = TRUE, pollinator_species  = "Apis_mellifera"
+)
+# Example 5: Get all interactions involving a specific plant species (e.g., "Ach_mil")
+get_interaction_data(
+  is_pollinator = TRUE, plant_species  = "Suc_pra", start_time = "08:00", end_time = "18:00"
+)
+
+
+
+## Testing the sampling effort calculation function ####
+# --- Full Workflow Example ---
+
+# 1. Calculate sampling effort ONCE from the full dataset
+effort <- calculate_sampling_effort(interaction_data)
+
+# 2. Filter for a specific subset of interactions you care about
+# (e.g., true pollinators in 2022)
+pollinator_visits_22 <- get_interaction_data(
+  years = 22,
+  is_pollinator = TRUE
+)
+
+# 3. Summarize and standardize this subset
+# Let's find the interaction rate per plant species in each plot
+interaction_rates <- summarize_interactions(
+  data = pollinator_visits_22,
+  effort_data = effort,
+  plot_id, experiment_run, plant_code # These are the grouping variables
+)
+
+# View the results!
+head(interaction_rates)
+
+#
+# Calculate effort using the full, unfiltered interaction_data
+effort <- calculate_sampling_effort(interaction_data)
+
+# Let's inspect the result
+cat("Calculated sampling effort (first 6 rows):\n")
+print(head(effort))
+
+
+# Filter for true pollinators on Suc_pra in year 22
+succisa_interactions_22 <- get_interaction_data(
+  years = 21,
+  plant_species = "Suc_pra",
+  is_pollinator = TRUE,
+  experiment_run = c( "Handrkov13_VIII",
+                      "Handrkov12_VIII",
+                      "Handrkov14_VIII",
+                      "Handrkov15_VIII",
+                      "Handrkov16_VIII",
+                      "Handrkov21_VIII",
+                      "Handrkov11_VIII",
+                      "Handrkov24_VIII",
+                      "Handrkov23_VIII",
+                      "Handrkov17_VIII",
+                      "Handrkov19_VIII",
+                      "Handrkov22_VIII",
+                      "Handrkov20_VIII",
+                      "Handrkov18_VIII")
+)
+
+cat("\nFiltered data contains", nrow(succisa_interactions_22), "interaction records.\n")
+
+# Calculate the standardized rate for each plot
+succisa_rates_per_plot <- summarize_interactions(
+  data = succisa_interactions_22,
+  effort_data = effort,
+  plot_id, experiment_run # Group by plot
+)
+
+cat("\nStandardized interaction rates for Suc_pra in 2022 (first 6 rows):\n")
+print(head(succisa_rates_per_plot))
+
+
+
+# --- MANUAL VERIFICATION ---
+# Let's check the result for the very first plot in our summary table
+# --- Full Workflow & Verification ---
+
+# 1. First, ensure your package is up-to-date with all changes
+devtools::load_all()
+
+# 2. Calculate the sampling effort from the full, clean interaction_data
+# This now correctly includes the "zero-interaction" visits
+effort <- calculate_sampling_effort(interaction_data)
+
+# 3. Filter for our specific research question
+# (True pollinators on Succisa pratensis in 2022)
+succisa_interactions_22 <- get_interaction_data(
+  years = 22,
+  plant_species = "Suc_pra",
+  is_pollinator = TRUE
+)
+
+# 4. Summarize and standardize this filtered subset
+# We'll group by plot_id and the experiment_run
+succisa_rates_per_plot <- summarize_interactions(
+  data = succisa_interactions_22,
+  effort_data = effort,
+  plot_id, experiment_run
+)
+
+cat("Standardized interaction rates for Suc_pra in 2022 (first 6 rows):\n")
+print(head(succisa_rates_per_plot))
+
+
+# --- MANUAL VERIFICATION ---
+# Let's check the result for the very first plot in our summary table
+if (nrow(succisa_rates_per_plot) > 0) {
+
+  first_plot_id <- succisa_rates_per_plot$plot_id[1]
+  first_run <- succisa_rates_per_plot$experiment_run[1]
+  cat("\n--- Manually verifying Plot", first_plot_id, "in Run", as.character(first_run), "---\n")
+
+  # 1. Manually count total interactions for this plot in our filtered data
+  manual_total_interactions <- sum(
+    succisa_interactions_22$interaction_count[
+      succisa_interactions_22$plot_id == first_plot_id &
+        succisa_interactions_22$experiment_run == first_run
+    ],
+    na.rm = TRUE
+  )
+  cat("Manual sum of interactions:", manual_total_interactions, "\n")
+
+  # 2. Get the sampling effort for this plot from our effort table
+  manual_n_visits <- effort$n_visits[
+    effort$plot_id == first_plot_id &
+      effort$experiment_run == first_run
+  ]
+  cat("Sampling effort (n_visits):", manual_n_visits, "\n")
+
+  # 3. Manually calculate the rate
+  manual_rate <- manual_total_interactions / manual_n_visits
+  cat("Manual rate calculation:", manual_rate, "\n")
+
+  # 4. Get the rate calculated by the function
+  function_rate <- succisa_rates_per_plot$rate[1]
+  cat("Function-calculated rate:", function_rate, "\n\n")
+
+  # 5. Compare the results
+  if (isTRUE(all.equal(manual_rate, function_rate))) {
+    cat("✅ TEST PASSED: The manual calculation matches the function output.\n")
+  } else {
+    cat("❌ TEST FAILED: The calculations do not match.\n")
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
