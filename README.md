@@ -35,9 +35,32 @@ This package serves to combine data collected during decade and half long lastin
 
 ## How does this package works
 
+#### A Typical Workflow
+
+A common analysis with this package involves a clear sequence of steps: from getting clean data to calculating indices and finally visualizing the results.
+
+Example:
+
+```{r}
+library(HanPolNet)
+
+# 1. GET DATA: Retrieve standardized plant abundance and interaction data.
+plant_data_std <- get_plant_data(output = "standardized")
+interaction_data_std <- get_interaction_data(is_pollinator = TRUE, standardize = TRUE)
+
+# 2. CALCULATE INDICES: Compute metrics like HCA or community similarity.
+hca_results <- calculate_hca(plant_data_std, focal_species = "Suc_pra")
+similarity_results <- calculate_similarity(plant_data_std, group_by = "year")
+
+# 3. VISUALIZE: Create plots to explore trends and patterns.
+plot_abundance_trends(hca_results, plant_data_std, focal_species = "Suc_pra")
+
+plot_pollinator_diet(focal_plant = "Suc_pra", years = 22:24)
+```
+
 ### How Data is Organized in This Package
 
-interaction_dat To ensure transparency and reproducibility, the data in this package follows a standard R package workflow, separating the raw source data from the clean, ready-to-use data. Think of it like a kitchen and a pantry.
+To ensure transparency and reproducibility, the data in this package follows a standard R package workflow, separating the raw source data from the clean, ready-to-use data. Think of it like a kitchen and a pantry.
 
 #### `data/` (The Pantry)
 
@@ -265,3 +288,67 @@ The function can operate in two modes, controlled by the `group_by` argument:
 1.  **`group_by = c("year", "plot_id")` (Default):** This mode provides the most detailed comparison. It treats each unique plot-year observation as a distinct sample and returns a matrix comparing every sample to every other sample. This is useful for fine-grained analysis, like Multidimensional Scaling (MDS) of individual plots.
 
 2.  **`group_by = "year"`:** This mode is for high-level, year-to-year comparisons. It first calculates the *average* species composition for each year (by averaging abundances across all plots). It then returns a smaller matrix comparing each year's aggregate community profile to every other year.
+
+#### `plot_abundance_trends()`
+
+Creates faceted boxplots to visualize and test year-to-year changes in conspecific abundance and the HCA index. It uses a Wilcoxon rank-sum test to check for significant differences between consecutive years.
+
+#### `plot_similarity_change()`
+
+Visualizes the results of `calculate_similarity()` in three different ways (`plot_type`):
+
+1.  **`"yearly_turnover"`**: Shows how the average plant community changes from one year to the next.
+
+2.  **`"within_year_heterogeneity"`**: Shows how different the plots were from each other within each year.
+
+3.  **`"plot_turnover"`**: Tracks how much each individual plot changed from one year to the next.
+
+## Pollinator Diet Visualization: `plot_pollinator_diet()`
+
+The `plot_pollinator_diet()` function is designed to visualize and statistically compare the interaction rates of pollinators that visit a specific focal plant. It helps answer the question: "Do the pollinators visiting my focal plant interact differently with it compared to other plants, and how does this change over time?"
+
+### Conspecific vs. Heterospecific Interaction Rate
+
+In the context of this function:
+
+-   **Conspecific Interaction Rate**: Refers to the standardized rate (interactions per visit) at which a pollinator (known to visit the `focal_plant`) interacts *with the `focal_plant` itself*.
+
+-   **Heterospecific Interaction Rate**: Refers to the standardized rate at which the *same group* of pollinators interacts *with any other plant species*.
+
+The function calculates these rates based on data filtered by `get_interaction_data()` using the `standardize = TRUE` argument.
+
+### The Visualization
+
+The function creates side-by-side violin plots for each year specified. Within each year, one violin shows the distribution of **Conspecific** rates, and the other shows the distribution of **Heterospecific** rates. Jittered points can be displayed to show individual data points (either single interaction events or total rates per plot).
+
+### Statistical Test
+
+If `add_stats = TRUE`, the function performs an **unpaired Wilcoxon rank-sum test** (Mann-Whitney U test) to compare the distributions between **consecutive years**. This test is performed **independently** for the "Conspecific" group and the "Heterospecific" group.
+
+-   **What it tests**: Whether there is a significant change in the interaction rates from one year to the next *within* each category.
+
+-   **Interpretation**: Brackets with significance stars (`*`, `**`, `***`) or "ns" (not significant) are drawn above the violins, connecting consecutive years for each type separately. A significant result (e.g., `*`) suggests a meaningful change in interaction rates for that group between those two years.
+
+### Key Parameters
+
+-   `focal_plant`: The plant species code (e.g., `"Suc_pra"`) to focus the analysis on.
+
+-   `years`: A numeric vector specifying which years to include.
+
+-   `summary_level`: Controls what each data point represents.
+
+    -   `"plot"` (default): Each point is the **total standardized rate for a single plot**.
+
+    -   `"interaction"`: Each point is a **single interaction event**.
+
+-   `add_stats`: `TRUE` (default) to display year-to-year statistical comparisons, `FALSE` to hide them.
+
+-   `log_scale`: `FALSE` (default) for a linear y-axis. Set to `TRUE` to use a log10 scale, recommended for skewed rate data.
+
+-   `colors`: Allows customization of the violin plot colors.
+
+-   `ylim`: Allows manual setting of the y-axis limits.
+
+-   `...`: Allows passing additional filters (like `is_pollinator = TRUE`) directly to `get_interaction_data()`.
+
+#### 

@@ -379,17 +379,92 @@ if (nrow(succisa_rates_per_plot) > 0) {
 
 
 
+## Testing the interaction rate summarization function ####
+# --- Full Workflow Example ---
+
+# 1. Get the data you want to analyze (e.g., true pollinators only)
+pollinator_interactions <- get_interaction_data(is_pollinator = TRUE)
+
+# 2. Get the locality-level summary (average rate per year)
+yearly_rates <- summarize_interaction_rate(
+  data = pollinator_interactions,
+  focal_plant = "Suc_pra",
+  group_by = c("year")
+)
+cat("--- Yearly Interaction Rates for Succisa pratensis ---\n")
+print(yearly_rates)
+
+# 3. Get the plot-level summary (rate for each plot in each year)
+plot_rates <- summarize_interaction_rate(
+  data = pollinator_interactions,
+  focal_plant = "Suc_pra",
+  group_by = c("year", "plot_id")
+)
+cat("\n--- Plot-Level Interaction Rates (first 6 rows) ---\n")
+print(head(plot_rates))
+
+# 4. Now you can easily plot these results!
+# For example, a simple line plot of the yearly trend:
+ggplot(yearly_rates, aes(x = year, y = rate)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Total Interaction Rate on Succisa pratensis (Locality Average)")
 
 
 
+### Testing the pollinator turnover calculation function ####
+# --- Corrected Workflow Example ---
+
+# 1. Get standardized interaction data (e.g., true pollinators)
+# We need standardize = TRUE to get the rate column later
+pollinator_interactions_std <- get_interaction_data(is_pollinator = TRUE, standardize = TRUE)
+
+# 2. Calculate TOTAL interaction rate PER PLOT/YEAR for the focal plant
+# This uses summarize_interaction_rate as intended
+focal_plant_rates <- summarize_interaction_rate(
+  data = pollinator_interactions_std,
+  focal_plant = "Suc_pra",
+  group_by = c("year", "plot_id")
+)
+cat("--- Plot-Level TOTAL Interaction Rates for Succisa pratensis ---\n")
+print(head(focal_plant_rates))
+
+# 3. Prepare data for TURNOVER analysis
+# We need the interaction rate PER POLLINATOR visiting the focal plant
+# Use the general summarize_interactions function for this.
+# First, filter the standardized data for the focal plant
+focal_plant_interactions <- pollinator_interactions_std %>%
+  filter(plant_code == "Suc_pra")
+
+# Load the full effort data (calculated from raw data)
+effort <- calculate_sampling_effort(interaction_data)
+
+# Now summarize rate per pollinator visiting the focal plant
+turnover_input_data <- summarize_interactions(
+  data = focal_plant_interactions,
+  effort_data = effort,
+  experiment_run, year, plot_id, pollinator_id # Group by year, plot, AND pollinator
+)
+cat("\n--- Data Ready for Turnover Calculation (first 6 rows) ---\n")
+print(head(turnover_input_data))
 
 
+# 4. Calculate Plot-Level Pollinator Turnover using the correctly prepared data
+plot_turnover <- calculate_pollinator_turnover(
+  rate_data = turnover_input_data,
+  focal_plant = "Suc_pra", # Label for context, not used in calculation
+  level = "plot"
+)
 
+cat("\n--- Plot-Level Pollinator Turnover (first 6 rows) ---\n")
+print(head(plot_turnover))
 
-
-
-
-
+# 5. Plot the plot-level turnover
+ggplot(plot_turnover, aes(x = year_pair, y = similarity, group = plot_id, color = as.factor(plot_id))) +
+  geom_line() +
+  labs(title = "Pollinator Community Turnover on Succisa pratensis (Plot Level)",
+       x = "Year-to-Year Comparison", y = "Ruzicka Similarity", color = "Plot ID") +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
 
 
