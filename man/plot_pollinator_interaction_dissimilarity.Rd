@@ -6,29 +6,44 @@
 \usage{
 plot_pollinator_interaction_dissimilarity(
   years,
+  plant_abundance_data = NULL,
+  null_model_type = "shuffle",
+  summarize_years = FALSE,
   top_n_pollinators = 20,
   min_plots = 3,
+  n_null_models = 99,
   ...
 )
 }
 \arguments{
 \item{years}{A numeric vector of years to analyze.}
 
-\item{top_n_pollinators}{An integer specifying how many of the most abundant
-pollinators to include in the plot. If NULL, includes all pollinators found
-in enough plots.}
+\item{plant_abundance_data}{A data frame containing standardized plant abundance data,
+typically from `get_plant_data(output = "standardized")`. Required if
+`null_model_type = "abundance_weighted"`.}
 
-\item{min_plots}{An integer. Pollinators observed in fewer than this many plots
-within a year will be excluded, as dissimilarity cannot be calculated. Defaults to 3.}
+\item{null_model_type}{A character string specifying the null model algorithm:
+`"shuffle"` (default): Randomly shuffles interactions while approximately
+preserving row/column frequencies (vegan's "r00").
+`"abundance_weighted"`: Shuffles interactions within each plot based on the
+relative abundance of available plants in that plot.}
 
-\item{...}{Additional filtering arguments passed to `get_interaction_data()`
-(e.g., `is_pollinator = TRUE`).}
+\item{summarize_years}{A logical value. If `FALSE` (default), results are faceted by year.
+If `TRUE`, results are averaged across years.}
+
+\item{top_n_pollinators}{An integer specifying how many pollinators to include.}
+
+\item{min_plots}{An integer. Pollinators in fewer plots are excluded. Defaults to 3.}
+
+\item{n_null_models}{The number of null model iterations.}
+
+\item{...}{Additional filtering arguments passed to `get_interaction_data()`.}
 }
 \value{
-A data frame containing the calculated dissimilarities (for now). Plotting will be added later.
+A ggplot object.
 }
 \description{
 Calculates and plots the average Morisita-Horn dissimilarity of a pollinator's
-interaction partners (plants) across different plots within a year, comparing
-observed values to a null model expectation.
+interaction partners (plants) across different plots, comparing observed
+values to null model expectations. Allows for different null model types.
 }
