@@ -9,13 +9,12 @@
 #'   test is performed within each group to compare conspecific and
 #'   heterospecific pollen counts.
 #' @param colors A named character vector of two colors for the plot.
-#' @export
 #' @return A ggplot object.
 #' @import ggplot2
 #' @importFrom dplyr %>%
 #' @importFrom tidyr pivot_longer
 #' @importFrom ggpubr stat_compare_means
-#'
+#' @export
 plot_pollen_deposition <- function(group_by = "year", add_stats = TRUE,
                                    colors = c("Conspecific" = "#0072B2", "Heterospecific" = "#D55E00")) {
 
