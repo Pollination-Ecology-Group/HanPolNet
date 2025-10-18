@@ -40,7 +40,7 @@ table(os234$year, os234$plot_id)
 
 
 
-## Testing the standardization feature ####
+##  standardization feature ####
 # Get raw data (should look the same as before)
 raw_data <- get_plant_data(years = 22)
 summary(raw_data$Ach_pta) # Should see values > 1
@@ -50,7 +50,7 @@ std_data <- ?get_plant_data(years = 22, output = "standardized")
 summary(std_data$Ach_pta) # All values should now be between 0 and 1
 
 
-## Testing the HCA calculation function ####
+##  HCA calculation function ####
 # First, let's get some standardized data to work with
 test_data <- get_plant_data(years = c(22,23,24), output = "standardized")
 
@@ -65,7 +65,7 @@ head(hca_results)
 
 
 
-## Testing the similarity calculation function ####
+##  similarity calculation function ####
 # --- Test 1: Compare aggregated years ---
 all_std_data <- get_plant_data(output = "standardized")
 year_similarity <- calculate_similarity(all_std_data, group_by = "year")
@@ -89,7 +89,7 @@ cat("Pairwise similarity matrix for the subset (rounded):\n")
 print(round(plot_similarity$similarity_matrix, 2))
 
 
-## Testing the similarity change plotting function ####
+##  similarity change plotting function ####
 # --- Prepare the necessary data ---
 # For year-level plots
 
@@ -115,7 +115,7 @@ print(p2)
 p3 <- plot_similarity_change(plot_similarity, plot_type = "plot_turnover")
 print(p3)
 
-## Testing the HCA neighborhood plotting function ####
+##  HCA neighborhood plotting function ####
 
 # 1. Get the necessary data
 plant_data_std <- get_plant_data(output = "standardized")
@@ -151,7 +151,7 @@ p_grid <- plot_hca_neighborhood(hca_subset, std_subset,
                                 plot_type = "grid")
 print(p_grid)
 
-## Testing the new trends plotting function ####
+##  new trends plotting function ####
 # Prepare the data
 std_data <- get_plant_data(output = "standardized", years = 22:24)
 hca_results <- calculate_hca(std_data, focal_species = "Suc_pra")
@@ -210,7 +210,7 @@ if (!is.na(test_index)) {
 
 
 
-## Testing the interaction data retrieval function ####
+##  interaction data retrieval function ####
 # Example usage of get_interaction_data()
 # Example 1: Get all interactions with Apis mellifera on Succisa pratensis in 2022
 pollinators_on_succisa <- get_interaction_data(
@@ -243,7 +243,7 @@ get_interaction_data(
 
 
 
-## Testing the sampling effort calculation function ####
+##  sampling effort calculation function ####
 # --- Full Workflow Example ---
 
 # 1. Calculate sampling effort ONCE from the full dataset
@@ -385,7 +385,7 @@ if (nrow(succisa_rates_per_plot) > 0) {
 
 
 
-## Testing the interaction rate summarization function ####
+##  interaction rate summarization function ####
 # --- Full Workflow Example ---
 
 # 1. Get the data you want to analyze (e.g., true pollinators only)
@@ -418,7 +418,7 @@ ggplot(yearly_rates, aes(x = year, y = rate)) +
 
 
 
-### Testing the pollinator turnover calculation function ####
+## Pollinator turnover calculation function ####
 # --- Corrected Workflow Example ---
 
 # 1. Get standardized interaction data (e.g., true pollinators)
@@ -558,7 +558,8 @@ plot2 <- ggplot(species_sharing_df, aes(x = year, y = mean_sharing_score, group 
 cat("\n--- Displaying Species-Level Plot ---\n")
 print(plot2)
 
-## Testing the pollen deposition plotting function ####
+
+# Pollen deposition plotting function ####
 # Plot the data grouped by year (the default)
 plot_by_year <- plot_pollen_deposition()
 print(plot_by_year)
@@ -566,6 +567,100 @@ print(plot_by_year)
 # Plot the data grouped by day, without stats
 plot_by_day <- plot_pollen_deposition(group_by = "day", add_stats = FALSE)
 print(plot_by_day)
+
+
+
+# Pollinator sharing visualisation ----
+
+# --- 1. Prepare the data for both plots ---
+# Define the years you want to analyze
+years_to_analyze <- 22:24 # Use the years you have data for
+
+# --- Community-Level Data ---
+yearly_community_sharing <- lapply(years_to_analyze, function(y) {
+  # Get standardized interaction data for the year
+  interaction_data_year <- get_interaction_data(
+    years = y,
+    is_pollinator = TRUE,
+    standardize = TRUE
+  )
+
+  if (nrow(interaction_data_year) > 0) {
+    sharing_score <- calculate_pollinator_sharing(
+      data = interaction_data_year,
+      level = "community"
+    )
+    return(data.frame(year = y, community_sharing = sharing_score))
+  } else {
+    return(NULL)
+  }
+})
+community_sharing_df <- dplyr::bind_rows(yearly_community_sharing)
+
+# --- Species-Level Data ---
+yearly_species_sharing <- lapply(years_to_analyze, function(y) {
+  interaction_data_year <- get_interaction_data(
+    years = y,
+    is_pollinator = TRUE,
+    standardize = TRUE
+  )
+  if (nrow(interaction_data_year) > 0) {
+    sharing_scores <- calculate_pollinator_sharing(
+      data = interaction_data_year,
+      level = "species"
+    )
+    sharing_scores$year <- y
+    return(sharing_scores)
+  } else {
+    return(NULL)
+  }
+})
+species_sharing_df <- dplyr::bind_rows(yearly_species_sharing)
+
+
+# --- 2. Create and Print the Visualizations ---
+
+# --- Plot 1: Community-Level Trend ---
+plot1 <- ggplot(community_sharing_df, aes(x = year, y = community_sharing)) +
+  geom_line(linewidth = 1.2, color = "steelblue") +
+  geom_point(size = 4, color = "steelblue") +
+  scale_x_continuous(breaks = years_to_analyze) +
+  ylim(0, 1) +
+  labs(
+    title = "Overall Pollinator Sharing Across the Plant Community",
+    subtitle = "Higher values indicate more generalized pollinator use",
+    x = "Year",
+    y = "Mean Community-Wide Pollinator Sharing"
+  ) +
+  theme_minimal()
+
+cat("--- Displaying Community-Level Plot ---\n")
+print(plot1)
+
+
+# --- Plot 2: Species-Level Trends ---
+plot2 <- ggplot(species_sharing_df, aes(x = year, y = mean_sharing_score, group = plant_code, color = plant_code)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = years_to_analyze) +
+  ylim(0, 1) +
+  labs(
+    title = "Pollinator Sharing Trends for Individual Plant Species",
+    x = "Year",
+    y = "Mean Pollinator Sharing Score"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") # Hide legend if there are many species
+
+cat("\n--- Displaying Species-Level Plot ---\n")
+print(plot2)
+
+
+
+
+
+
+
 
 
 
