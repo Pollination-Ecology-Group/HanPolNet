@@ -468,8 +468,89 @@ ggplot(plot_turnover, aes(x = year_pair, y = similarity, group = plot_id, color 
 
 
 
+# Pollinator sharing visualisation ----
+# --- 1. Prepare the data for both plots ---
+# Define the years you want to analyze
+years_to_analyze <- 22:24 # Use the years you have data for
+
+# --- Community-Level Data ---
+yearly_community_sharing <- lapply(years_to_analyze, function(y) {
+  # Get standardized interaction data for the year
+  interaction_data_year <- get_interaction_data(
+    years = y,
+    is_pollinator = TRUE,
+    standardize = TRUE
+  )
+
+  if (nrow(interaction_data_year) > 0) {
+    sharing_score <- calculate_pollinator_sharing(
+      data = interaction_data_year,
+      level = "community"
+    )
+    return(data.frame(year = y, community_sharing = sharing_score))
+  } else {
+    return(NULL)
+  }
+})
+community_sharing_df <- dplyr::bind_rows(yearly_community_sharing)
+
+# --- Species-Level Data ---
+yearly_species_sharing <- lapply(years_to_analyze, function(y) {
+  interaction_data_year <- get_interaction_data(
+    years = y,
+    is_pollinator = TRUE,
+    standardize = TRUE
+  )
+  if (nrow(interaction_data_year) > 0) {
+    sharing_scores <- calculate_pollinator_sharing(
+      data = interaction_data_year,
+      level = "species"
+    )
+    sharing_scores$year <- y
+    return(sharing_scores)
+  } else {
+    return(NULL)
+  }
+})
+species_sharing_df <- dplyr::bind_rows(yearly_species_sharing)
 
 
+# --- 2. Create and Print the Visualizations ---
+
+# --- Plot 1: Community-Level Trend ---
+plot1 <- ggplot(community_sharing_df, aes(x = year, y = community_sharing)) +
+  geom_line(linewidth = 1.2, color = "steelblue") +
+  geom_point(size = 4, color = "steelblue") +
+  scale_x_continuous(breaks = years_to_analyze) +
+  ylim(0, 1) +
+  labs(
+    title = "Overall Pollinator Sharing Across the Plant Community",
+    subtitle = "Higher values indicate more generalized pollinator use",
+    x = "Year",
+    y = "Mean Community-Wide Pollinator Sharing"
+  ) +
+  theme_minimal()
+
+cat("--- Displaying Community-Level Plot ---\n")
+print(plot1)
+
+
+# --- Plot 2: Species-Level Trends ---
+plot2 <- ggplot(species_sharing_df, aes(x = year, y = mean_sharing_score, group = plant_code, color = plant_code)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = years_to_analyze) +
+  ylim(0, 1) +
+  labs(
+    title = "Pollinator Sharing Trends for Individual Plant Species",
+    x = "Year",
+    y = "Mean Pollinator Sharing Score"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") # Hide legend if there are many species
+
+cat("\n--- Displaying Species-Level Plot ---\n")
+print(plot2)
 
 
 

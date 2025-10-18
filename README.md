@@ -351,10 +351,6 @@ If `add_stats = TRUE`, the function performs an **unpaired Wilcoxon rank-sum tes
 
 -   `...`: Allows passing additional filters (like `is_pollinator = TRUE`) directly to `get_interaction_data()`.
 
-#### 
-
-Okay, let's write a comprehensive explanation for the `plot_pollinator_interaction_dissimilarity` function for your README. This will make it clear to users what the analysis does and how to interpret the results.
-
 ------------------------------------------------------------------------
 
 ## Pollinator Interaction Dissimilarity: `plot_pollinator_interaction_dissimilarity()`
@@ -438,3 +434,41 @@ The plot displays pollinators along the y-axis (often ordered by observed dissim
 -   `n_null_models`: Number of randomizations (use a high number like 999 for final analysis).
 
 -   `...`: Pass filters to `get_interaction_data()` (e.g., `is_pollinator = TRUE`).
+
+    ------------------------------------------------------------------------
+
+## Pollinator Sharing Analysis
+
+This package includes two functions to analyze how plant species share pollinators within the network.
+
+### 1. Calculating the Metric: `calculate_pollinator_sharing()`
+
+This function quantifies the degree of pollinator sharing (niche overlap) for a specific network of interactions.
+
+#### The Morisita-Horn Index
+
+The function uses the **Morisita-Horn similarity index** to compare the pollinator communities visiting each plant. This index is well-suited for abundance data, as it considers both the presence and the relative abundance of shared pollinators. The score ranges from **0** (no shared pollinators) to **1** (identical pollinator communities).
+
+#### Levels of Analysis
+
+The function's `level` argument allows you to calculate this metric in two ways:
+
+-   `level = "community"` (default): Returns a **single number** representing the average pollinator sharing across the entire plant community. This gives a "big picture" measure of how generalized the network is.
+
+-   `level = "species"`: Returns a **data frame** with the average sharing score for each individual plant species. This helps identify which plants are more specialized (low score) or generalized (high score) in their pollinator use.
+
+### 2. Visualizing the Dynamics: `pollinator_sharing_turnover()`
+
+This function automates the process of calculating and visualizing how pollinator sharing changes over time. It repeatedly calls `calculate_pollinator_sharing()` on different subsets of your data and plots the results.
+
+#### How it Works
+
+You provide the function with the interaction data and a time variable to compare across (e.g., `"year"`). The function then:
+
+1.  Splits the data for each time point (e.g., for each year).
+
+2.  Calculates the sharing score for each of these network "snapshots."
+
+3.  Generates a line plot showing the trend of the sharing score over time.
+
+This can be done for the entire community (`level = "community"`) or for individual plant species (`level = "species"`), creating either a single trend line or a "spaghetti plot" with a line for each species.
