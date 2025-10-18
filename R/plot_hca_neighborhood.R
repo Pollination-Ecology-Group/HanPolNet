@@ -54,7 +54,7 @@ plot_hca_neighborhood <- function(hca_data, abundance_data, focal_species, years
   p <- ggplot(plot_data, aes(x = as.factor(.data$year), y = .data$value, fill = .data$type)) +
     geom_jitter(position = position_jitterdodge(jitter.width = 0.1, dodge.width = dodge_width),
                 alpha = 0.2, size = 1.5) +
-    geom_violin(position = position_dodge(width = dodge_width), trim = TRUE, alpha = 0.7) +
+    geom_violin(position = position_dodge(width = dodge_width), trim = TRUE, alpha = 0.5) +
     scale_fill_manual(values = colors) +
     labs(
       title = paste("Floral Neighborhood of", focal_species),
