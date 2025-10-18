@@ -9,7 +9,7 @@
 #'   test is performed within each group to compare conspecific and
 #'   heterospecific pollen counts.
 #' @param colors A named character vector of two colors for the plot.
-#'
+#' @export
 #' @return A ggplot object.
 #' @import ggplot2
 #' @importFrom dplyr %>%
