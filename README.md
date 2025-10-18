@@ -472,3 +472,38 @@ You provide the function with the interaction data and a time variable to compar
 3.  Generates a line plot showing the trend of the sharing score over time.
 
 This can be done for the entire community (`level = "community"`) or for individual plant species (`level = "species"`), creating either a single trend line or a "spaghetti plot" with a line for each species.
+
+  ------------------------------------------------------------------------
+
+### Pollen Deposition Analysis
+This package includes data on pollen deposition and a function to visualize it.
+
+#### Dataset: `pollen_deposition`
+This data frame contains counts of conspecific and heterospecific pollen grains found on individual stigmas of *Succisa pratensis*.
+
+-   `id`: A unique identifier for each stigma.
+
+-   `inflorescence_id`: Identifier for the inflorescence from which the stigma was collected.
+
+-   `conspecific_pollen`: The number of pollen grains from *Succisa pratensis*.
+
+-   `heterospecific_pollen`: The number of pollen grains from other plant species.
+
+-   `pollen_total`: The total number of pollen grains on the stigma.
+
+-   `year`: The year of collection.
+
+-   `day`: The day of collection (within the month of August).
+
+#### Visualization Function: `plot_pollen_deposition()`
+This function creates side-by-side violin plots to compare the distributions of conspecific vs. heterospecific pollen loads.
+
+-   **How it works**: The function takes the `pollen_deposition` data and pivots it into a long format to separate "Conspecific" and "Heterospecific" pollen counts. It then generates violin plots showing the distribution of these counts.
+
+-   **Key Parameters**:
+
+    -   `group_by`: A string specifying the x-axis grouping variable. You can choose `"year"` (the default) to see changes between years, or `"day"` to see changes across different collection days within a year.
+
+    -   `add_stats`: A logical value (`TRUE` by default). If `TRUE`, it performs a **paired Wilcoxon test** within each group (e.g., within each year) to determine if there is a significant difference between the number of conspecific and heterospecific pollen grains.
+
+    -   `colors`: Allows you to customize the colors of the violin plots.
