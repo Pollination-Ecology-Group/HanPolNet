@@ -116,25 +116,31 @@ p3 <- plot_similarity_change(plot_similarity, plot_type = "plot_turnover")
 print(p3)
 
 ## Testing the HCA neighborhood plotting function ####
-# 1. Prepare the data
-std_data <- get_plant_data(output = "standardized", years = 22:24)
-std_data <- std_data[std_data$Suc_pra > 0,]
 
-hca_results <- calculate_hca(std_data, focal_species = "Suc_pra")
+# 1. Get the necessary data
+plant_data_std <- get_plant_data(output = "standardized")
+plant_data_std  <- plant_data_std[plant_data_std$Suc_pra > 0,]
+hca_results <- calculate_hca(plant_data_std, focal_species = "Suc_pra")
 
-# 2. Generate and view each plot
+# 2. Generate the plot with stats (default)
+hca_plot_with_stats <- plot_hca_neighborhood(
+  hca_data = hca_results,
+  abundance_data = plant_data_std,
+  focal_species = "Suc_pra",
+  years = 22:24
+)
+print(hca_plot_with_stats)
 
-# Plot 1: Yearly Average
-p_year <- plot_hca_neighborhood(hca_results, std_data,
-                                focal_species = "Suc_pra",
-                                plot_type = "by_year")
-print(p_year)
+# 3. Generate the plot without stats
+hca_plot_no_stats <- plot_hca_neighborhood(
+  hca_data = hca_results,
+  abundance_data = plant_data_std,
+  focal_species = "Suc_pra",
+  years = 22:24,
+  add_stats = FALSE
+)
+print(hca_plot_no_stats)
 
-# Plot 2: Single Plot Timeline (e.g., for plot 10)
-p_plot10 <- plot_hca_neighborhood(hca_results, std_data,
-                                  focal_species = "Suc_pra",
-                                  plot_type = "by_plot", plot_id = 10)
-print(p_plot10)
 
 # Plot 3: Grid View (let's use a subset to keep it readable)
 std_subset <- get_plant_data(years = 21:23, plot_id = unique(std_data$plot_id), output = "standardized")

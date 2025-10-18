@@ -2,47 +2,41 @@
 % Please edit documentation in R/plot_hca_neighborhood.R
 \name{plot_hca_neighborhood}
 \alias{plot_hca_neighborhood}
-\title{Plot the Floral Neighborhood (Conspecific vs. Heterospecific Abundance)}
+\title{Plot and Compare Conspecific Abundance vs. HCA}
 \usage{
 plot_hca_neighborhood(
   hca_data,
   abundance_data,
   focal_species,
-  plot_type = "by_year",
-  plot_id = NULL
+  years,
+  add_stats = TRUE,
+  colors = c(Conspecific = "#0072B2", `Heterospecific (HCA)` = "#D55E00")
 )
 }
 \arguments{
 \item{hca_data}{A data frame produced by `calculate_hca()`.}
 
-\item{abundance_data}{A standardized data frame from `get_plant_data(output = "standardized")`,
-used to get the focal species' abundance.}
+\item{abundance_data}{A standardized data frame from `get_plant_data(output = "standardized")`.}
 
-\item{focal_species}{A character string specifying the plant code of the
-focal species. This must match the one used in `calculate_hca()`.}
+\item{focal_species}{A character string specifying the plant code of the focal species.}
 
-\item{plot_type}{A character string specifying the plot to generate. Must be one
-of `"by_year"`, `"by_plot"`, or `"grid"`.}
+\item{years}{A numeric vector of years to include in the analysis.}
 
-\item{plot_id}{A numeric value specifying the plot to display. Only required
-when `plot_type = "by_plot"`.}
+\item{add_stats}{A logical value. If `TRUE` (the default), statistical comparisons are displayed.}
+
+\item{colors}{A named character vector of two colors for the plot.}
 }
 \value{
 A ggplot object.
 }
 \description{
-This function creates visualizations of the Heterospecific Co-flowering
-Abundance (HCA) index alongside the abundance of a focal species.
+This function creates side-by-side violin plots to compare year-to-year changes
+in the abundance of a focal plant ("Conspecific") versus the abundance of its
+neighbors ("Heterospecific" - HCA).
 }
 \details{
-This function takes the output from `calculate_hca()` and the original
-standardized abundance data to create one of three plot types:
-\itemize{
-  \item `"by_year"`: Faceted violin plots comparing the distributions of
-    conspecific and heterospecific abundance for each year, with p-values
-    from a Wilcoxon signed-rank test.
-  \item `"by_plot"`: A timeline for a single, specified plot, showing how its
-    floral neighborhood has changed over the years.
-  \item `"grid"`: A comprehensive view showing a bar for every plot, faceted by year.
-}
+If `add_stats = TRUE`, the function performs an unpaired Wilcoxon rank-sum test
+to compare the distribution of one year to the next. This test is performed
+independently for the "Conspecific" and "Heterospecific (HCA)" groups, and
+the results are displayed as separate brackets correctly positioned over the violins.
 }

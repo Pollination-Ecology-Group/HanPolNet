@@ -1,122 +1,92 @@
-#' Plot the Floral Neighborhood (Conspecific vs. Heterospecific Abundance)
+#' Plot and Compare Conspecific Abundance vs. HCA
 #'
-#' This function creates visualizations of the Heterospecific Co-flowering
-#' Abundance (HCA) index alongside the abundance of a focal species.
+#' This function creates side-by-side violin plots to compare year-to-year changes
+#' in the abundance of a focal plant ("Conspecific") versus the abundance of its
+#' neighbors ("Heterospecific" - HCA).
 #'
 #' @details
-#' This function takes the output from `calculate_hca()` and the original
-#' standardized abundance data to create one of three plot types:
-#' \itemize{
-#'   \item `"by_year"`: Faceted violin plots comparing the distributions of
-#'     conspecific and heterospecific abundance for each year, with p-values
-#'     from a Wilcoxon signed-rank test.
-#'   \item `"by_plot"`: A timeline for a single, specified plot, showing how its
-#'     floral neighborhood has changed over the years.
-#'   \item `"grid"`: A comprehensive view showing a bar for every plot, faceted by year.
-#' }
+#' If `add_stats = TRUE`, the function performs an unpaired Wilcoxon rank-sum test
+#' to compare the distribution of one year to the next. This test is performed
+#' independently for the "Conspecific" and "Heterospecific (HCA)" groups, and
+#' the results are displayed as separate brackets correctly positioned over the violins.
 #'
 #' @param hca_data A data frame produced by `calculate_hca()`.
-#' @param abundance_data A standardized data frame from `get_plant_data(output = "standardized")`,
-#'   used to get the focal species' abundance.
-#' @param focal_species A character string specifying the plant code of the
-#'   focal species. This must match the one used in `calculate_hca()`.
-#' @param plot_type A character string specifying the plot to generate. Must be one
-#'   of `"by_year"`, `"by_plot"`, or `"grid"`.
-#' @param plot_id A numeric value specifying the plot to display. Only required
-#'   when `plot_type = "by_plot"`.
+#' @param abundance_data A standardized data frame from `get_plant_data(output = "standardized")`.
+#' @param focal_species A character string specifying the plant code of the focal species.
+#' @param years A numeric vector of years to include in the analysis.
+#' @param add_stats A logical value. If `TRUE` (the default), statistical comparisons are displayed.
+#' @param colors A named character vector of two colors for the plot.
 #'
 #' @return A ggplot object.
 #' @export
 #' @import ggplot2
-#' @importFrom ggpubr stat_compare_means
-#' @importFrom stats aggregate sd
+#' @importFrom dplyr %>%
+#' @importFrom ggpubr stat_pvalue_manual
 #'
-plot_hca_neighborhood <- function(hca_data, abundance_data, focal_species,
-                                  plot_type = "by_year", plot_id = NULL) {
+plot_hca_neighborhood <- function(hca_data, abundance_data, focal_species, years, add_stats = TRUE,
+                                  colors = c("Conspecific" = "#0072B2", "Heterospecific (HCA)" = "#D55E00")) {
 
-  # --- Input Validation and Data Prep (same as before) ---
-  valid_types <- c("by_year", "by_plot", "grid")
-  if (!plot_type %in% valid_types) {
-    stop("`plot_type` must be one of: ", paste(valid_types, collapse = ", "))
-  }
+  # --- 1. Prepare Data for Plotting ---
   if (!focal_species %in% names(abundance_data)) {
     stop("focal_species '", focal_species, "' not found in abundance_data.")
   }
-  if (plot_type == "by_plot" && is.null(plot_id)) {
-    stop("You must provide a `plot_id` when using `plot_type = 'by_plot'`.")
+
+  # Filter for the relevant years
+  hca_data <- hca_data %>% dplyr::filter(.data$year %in% years)
+  abundance_data <- abundance_data %>% dplyr::filter(.data$year %in% years)
+
+  # Get conspecific abundance for the focal species
+  conspecific_data <- abundance_data[, c("year", "plot_id", focal_species)]
+  names(conspecific_data)[3] <- "value"
+  conspecific_data$type <- "Conspecific"
+
+  # Get heterospecific abundance (HCA)
+  heterospecific_data <- hca_data[, c("year", "plot_id", "hca")]
+  names(heterospecific_data)[3] <- "value"
+  heterospecific_data$type <- "Heterospecific (HCA)"
+
+  # Combine into one long data frame
+  plot_data <- dplyr::bind_rows(conspecific_data, heterospecific_data) %>%
+    dplyr::mutate(type = factor(.data$type, levels = c("Conspecific", "Heterospecific (HCA)")))
+
+  # --- 2. Create the Base Plot ---
+  dodge_width <- 0.8
+  p <- ggplot(plot_data, aes(x = as.factor(.data$year), y = .data$value, fill = .data$type)) +
+    geom_jitter(position = position_jitterdodge(jitter.width = 0.1, dodge.width = dodge_width),
+                alpha = 0.2, size = 1.5) +
+    geom_violin(position = position_dodge(width = dodge_width), trim = TRUE, alpha = 0.7) +
+    scale_fill_manual(values = colors) +
+    labs(
+      title = paste("Floral Neighborhood of", focal_species),
+      subtitle = "Year-to-year changes in conspecific vs. heterospecific (HCA) abundance",
+      x = "Year",
+      y = "Standardized Abundance",
+      fill = "Abundance Type"
+    ) +
+    coord_cartesian(ylim = c(0, NA)) + # Ensure y-axis starts at 0
+    theme_minimal() +
+    theme(legend.position = "bottom")
+
+  # --- 3. Conditionally Add Stats ---
+  if (add_stats) {
+    years_present <- as.character(sort(unique(plot_data$year)))
+    comparison_list <- lapply(1:(length(years_present) - 1), function(i) {
+      c(years_present[i], years_present[i+1])
+    })
+
+    # Use rstatix to perform tests and get bracket positions
+    stat_test <- plot_data %>%
+      dplyr::group_by(.data$type) %>%
+      rstatix::wilcox_test(value ~ year, comparisons = comparison_list) %>%
+      rstatix::add_significance("p") %>%
+      rstatix::add_xy_position(x = "year", dodge = dodge_width)
+
+    p <- p + ggpubr::stat_pvalue_manual(
+      stat_test,
+      label = "p.signif",
+      tip.length = 0.01
+    )
   }
 
-  conspecific_data <- abundance_data[, c("year", "plot_id", focal_species)]
-  names(conspecific_data)[3] <- "conspecific"
-  plot_data <- merge(hca_data, conspecific_data, by = c("year", "plot_id"))
-  names(plot_data)[3] <- "heterospecific"
-  plot_data_long <- reshape(
-    plot_data,
-    varying = c("heterospecific", "conspecific"),
-    v.names = "abundance",
-    timevar = "type",
-    times = c("Heterospecific (HCA)", "Conspecific"),
-    direction = "long",
-    idvar = c("year", "plot_id")
-  )
-  plot_data_long$type <- factor(plot_data_long$type, levels = c("Conspecific", "Heterospecific (HCA)"))
-
-  # --- Generate Plot based on plot_type ---
-
-  p <- switch(
-    plot_type,
-
-    "by_year" = {
-      # --- Plot 1: Yearly Average with Stat Test (UPDATED) ---
-      # Create a list of pairs to compare
-      comparison_list <- list(c("Conspecific", "Heterospecific (HCA)"))
-
-      ggplot(plot_data_long, aes(x = .data$type, y = .data$abundance)) +
-        geom_violin(trim = FALSE, aes(fill = .data$type)) +
-        geom_jitter(height = 0, width = 0.1, alpha = 0.2) +
-        # Add the statistical comparison using a Wilcoxon test
-        ggpubr::stat_compare_means(
-          method = "wilcox.test",
-          paired = TRUE,
-          comparisons = comparison_list
-        ) +
-        facet_wrap(~ year) +
-        labs(
-          title = "Conspecific vs. Heterospecific Abundance by Year",
-          subtitle = "Points are individual plots. P-values from paired Wilcoxon signed-rank test.",
-          x = "Abundance Type",
-          y = "Standardized Abundance"
-        ) +
-        theme(legend.position = "none") # Hide legend as fills are self-explanatory
-    },
-
-    "by_plot" = {
-      # Plot 2: Single Plot Timeline (Unchanged)
-      single_plot_data <- plot_data_long[plot_data_long$plot_id == plot_id, ]
-      if(nrow(single_plot_data) == 0) {
-        stop("plot_id ", plot_id, " not found in the dataset.")
-      }
-
-      ggplot(single_plot_data, aes(x = as.factor(.data$year), y = .data$abundance, fill = .data$type)) +
-        geom_bar(stat = "identity", position = "stack") +
-        labs(
-          title = paste("Floral Neighborhood for Plot:", plot_id),
-          x = "Year", y = "Standardized Abundance", fill = "Abundance Type"
-        )
-    },
-
-    "grid" = {
-      # Plot 3: Grid View (Unchanged)
-      ggplot(plot_data_long, aes(x = as.factor(.data$plot_id), y = .data$abundance, fill = .data$type)) +
-        geom_bar(stat = "identity", position = "stack") +
-        facet_wrap(~ year) +
-        labs(
-          title = "Floral Neighborhood by Plot and Year",
-          x = "Plot ID", y = "Standardized Abundance", fill = "Abundance Type"
-        ) +
-        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 6))
-    }
-  )
-
-  return(p + theme_minimal() + scale_fill_brewer(palette = "Set2"))
+  return(p)
 }
