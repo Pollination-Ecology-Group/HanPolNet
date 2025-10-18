@@ -558,8 +558,14 @@ plot2 <- ggplot(species_sharing_df, aes(x = year, y = mean_sharing_score, group 
 cat("\n--- Displaying Species-Level Plot ---\n")
 print(plot2)
 
+## Testing the pollen deposition plotting function ####
+# Plot the data grouped by year (the default)
+plot_by_year <- plot_pollen_deposition()
+print(plot_by_year)
 
-
+# Plot the data grouped by day, without stats
+plot_by_day <- plot_pollen_deposition(group_by = "day", add_stats = FALSE)
+print(plot_by_day)
 
 
 

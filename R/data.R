@@ -63,3 +63,21 @@
 #'   \item{notes}{Placeholder column for any additional notes.}
 #' }
 "pollinator_metadata"
+
+#' Pollen Deposition on Succisa pratensis Stigmas
+#'
+#' A dataset containing counts of conspecific and heterospecific pollen grains
+#' deposited on stigmas of Succisa pratensis over three years.
+#'
+#' @format A data frame with one row per stigma.
+#' \describe{
+#'   \item{id}{A unique identifier for each stigma.}
+#'   \item{inflorescence_id}{Identifier for the inflorescence from which the stigma was collected.}
+#'   \item{plant_species}{The plant species (here, only `Succisa pratensis`).}
+#'   \item{conspecific_pollen}{The number of pollen grains from the same species.}
+#'   \item{heterospecific_pollen}{The number of pollen grains from other species.}
+#'   \item{pollen_total}{The total number of pollen grains on the stigma.}
+#'   \item{year}{The year of collection.}
+#'   \item{day}{The day of collection within August.}
+#' }
+"pollen_deposition"
