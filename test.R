@@ -570,6 +570,7 @@ print(plot_by_day)
 
 
 
+
 # Pollinator sharing visualisation ----
 
 # --- 1. Prepare the data for both plots ---
@@ -657,6 +658,7 @@ print(plot2)
 
 
 
+
 ##  interaction network plotting function ####
 # --- Test the Network Plotting Function ---
 
@@ -671,6 +673,7 @@ plot_interaction_network(years = 23, is_pollinator = TRUE, focal_plant = "Suc_pr
 # Example 3: Plot the network for a specific time of day
 cat("\n--- Plotting morning network for 2024 ---\n")
 plot_interaction_network(years = 24, is_pollinator = TRUE, end_time = "12:00")
+
 
 
 
