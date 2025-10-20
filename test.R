@@ -700,3 +700,36 @@ plot_plant_sharing_network(
 )
 
 
+
+
+
+
+
+
+
+plant_data_std <- get_plant_data(output = "standardized")
+plant_data_std  <- plant_data_std[plant_data_std$Suc_pra > 0,]
+hca_results <- calculate_hca(plant_data_std, focal_species = "Suc_pra")
+
+
+
+# 2. Generate the plot with stats (default)
+p_year <- plot_hca_neighborhood(
+  hca_data = hca_results,
+  abundance_data = plant_data_std,
+  focal_species = "Suc_pra",
+  years = 22:24,
+  colors = c(Conspecific = "lightseagreen",  `Heterospecific (HCA)`  = "lightcoral")
+)
+print(p_year)
+
+
+
+
+
+
+
+
+
+
+

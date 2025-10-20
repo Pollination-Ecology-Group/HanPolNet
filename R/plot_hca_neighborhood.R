@@ -27,65 +27,78 @@ plot_hca_neighborhood <- function(hca_data, abundance_data, focal_species, years
                                   colors = c("Conspecific" = "#0072B2", "Heterospecific (HCA)" = "#D55E00")) {
 
   # --- 1. Prepare Data for Plotting ---
+  # (This part is unchanged)
   if (!focal_species %in% names(abundance_data)) {
     stop("focal_species '", focal_species, "' not found in abundance_data.")
   }
-
-  # Filter for the relevant years
   hca_data <- hca_data %>% dplyr::filter(.data$year %in% years)
   abundance_data <- abundance_data %>% dplyr::filter(.data$year %in% years)
-
-  # Get conspecific abundance for the focal species
   conspecific_data <- abundance_data[, c("year", "plot_id", focal_species)]
   names(conspecific_data)[3] <- "value"
   conspecific_data$type <- "Conspecific"
-
-  # Get heterospecific abundance (HCA)
   heterospecific_data <- hca_data[, c("year", "plot_id", "hca")]
   names(heterospecific_data)[3] <- "value"
   heterospecific_data$type <- "Heterospecific (HCA)"
-
-  # Combine into one long data frame
   plot_data <- dplyr::bind_rows(conspecific_data, heterospecific_data) %>%
     dplyr::mutate(type = factor(.data$type, levels = c("Conspecific", "Heterospecific (HCA)")))
 
   # --- 2. Create the Base Plot ---
+  # (This part is unchanged)
   dodge_width <- 0.8
   p <- ggplot(plot_data, aes(x = as.factor(.data$year), y = .data$value, fill = .data$type)) +
     geom_jitter(position = position_jitterdodge(jitter.width = 0.1, dodge.width = dodge_width),
                 alpha = 0.2, size = 1.5) +
-    geom_violin(position = position_dodge(width = dodge_width), trim = TRUE, alpha = 0.5) +
+    geom_violin(position = position_dodge(width = dodge_width), trim = TRUE, alpha = 0.7) +
     scale_fill_manual(values = colors) +
     labs(
       title = paste("Floral Neighborhood of", focal_species),
       subtitle = "Year-to-year changes in conspecific vs. heterospecific (HCA) abundance",
-      x = "Year",
-      y = "Standardized Abundance",
-      fill = "Abundance Type"
+      x = "Year", y = "Standardized Abundance", fill = "Abundance Type"
     ) +
-    coord_cartesian(ylim = c(0, NA)) + # Ensure y-axis starts at 0
+    coord_cartesian(ylim = c(0, NA)) +
     theme_minimal() +
     theme(legend.position = "bottom")
 
-  # --- 3. Conditionally Add Stats ---
+  # --- 3. Conditionally Add Stats (UPDATED LOGIC) ---
   if (add_stats) {
     years_present <- as.character(sort(unique(plot_data$year)))
     comparison_list <- lapply(1:(length(years_present) - 1), function(i) {
       c(years_present[i], years_present[i+1])
     })
 
-    # Use rstatix to perform tests and get bracket positions
-    stat_test <- plot_data %>%
-      dplyr::group_by(.data$type) %>%
+    # Perform stats and calculate base positions for Conspecific
+    stat_test_con <- plot_data %>%
+      dplyr::filter(type == "Conspecific") %>%
       rstatix::wilcox_test(value ~ year, comparisons = comparison_list) %>%
       rstatix::add_significance("p") %>%
-      rstatix::add_xy_position(x = "year", dodge = dodge_width)
+      rstatix::add_xy_position(x = "year")
 
-    p <- p + ggpubr::stat_pvalue_manual(
-      stat_test,
-      label = "p.signif",
-      tip.length = 0.01
-    )
+    # Perform stats and calculate base positions for Heterospecific
+    stat_test_het <- plot_data %>%
+      dplyr::filter(type == "Heterospecific (HCA)") %>%
+      rstatix::wilcox_test(value ~ year, comparisons = comparison_list) %>%
+      rstatix::add_significance("p") %>%
+      rstatix::add_xy_position(x = "year")
+
+    # Manually dodge the bracket positions
+    stat_test_con <- stat_test_con %>% dplyr::mutate(xmin = xmin - dodge_width / 4, xmax = xmax - dodge_width / 4)
+    stat_test_het <- stat_test_het %>% dplyr::mutate(xmin = xmin + dodge_width / 4, xmax = xmax + dodge_width / 4)
+
+    p <- p +
+      # Add the correctly positioned brackets for Conspecific
+      ggpubr::stat_pvalue_manual(
+        stat_test_con,
+        label = "p.signif",
+        tip.length = 0.01,
+        bracket.size = 0.3
+      ) +
+      # Add the correctly positioned brackets for Heterospecific
+      ggpubr::stat_pvalue_manual(
+        stat_test_het,
+        label = "p.signif",
+        tip.length = 0.01,
+        bracket.size = 0.3
+      )
   }
 
   return(p)
