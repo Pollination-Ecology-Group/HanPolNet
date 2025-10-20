@@ -657,7 +657,7 @@ print(plot2)
 
 
 
-
+##  interaction network plotting function ####
 # --- Test the Network Plotting Function ---
 
 # Example 1: Plot the entire network for true pollinators in 2023
@@ -674,5 +674,26 @@ plot_interaction_network(years = 24, is_pollinator = TRUE, end_time = "12:00")
 
 
 
+##  plant sharing network plotting function ####
+# --- Test the Plant Sharing Network Plot ---
+
+# 1. Get the necessary plant abundance data first
+plant_abund_std <- get_plant_data(output = "standardized")
+
+# Example 1: Network for 2024, sized by interaction count
+plot_plant_sharing_network(
+  years = 24,
+  is_pollinator = TRUE,
+  size_by = "interactions"
+)
+
+# Example 2: Network for 2024, highlighting Suc_pra, sized by abundance
+plot_plant_sharing_network(
+  years = 24,
+  is_pollinator = TRUE,
+  size_by = "abundance",
+  plant_abundance_data = plant_abund_std,
+  focal_plant = "Suc_pra"
+)
 
 
