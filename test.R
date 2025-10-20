@@ -658,7 +658,19 @@ print(plot2)
 
 
 
+# --- Test the Network Plotting Function ---
 
+# Example 1: Plot the entire network for true pollinators in 2023
+cat("--- Plotting network for 2023 ---\n")
+plot_interaction_network(years = 23, is_pollinator = TRUE)
+
+# Example 2: Plot the same network, but highlight "Suc_pra" and its visitors
+cat("\n--- Plotting network for 2023 with Suc_pra highlighted ---\n")
+plot_interaction_network(years = 23, is_pollinator = TRUE, focal_plant = "Suc_pra")
+
+# Example 3: Plot the network for a specific time of day
+cat("\n--- Plotting morning network for 2024 ---\n")
+plot_interaction_network(years = 24, is_pollinator = TRUE, end_time = "12:00")
 
 
 

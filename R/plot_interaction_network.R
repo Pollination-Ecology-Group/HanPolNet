@@ -18,6 +18,8 @@ plot_interaction_network <- function(focal_plant = NULL, ...) {
 
   # --- 1. Get and Prepare Data ---
   # Get standardized data based on user's filters (...)
+  # The default `remove_zeros = TRUE` in get_interaction_data should handle this,
+  # but we add an explicit filter below for maximum safety.
   interaction_subset <- get_interaction_data(standardize = TRUE, ...)
 
   if (nrow(interaction_subset) == 0) {
@@ -26,12 +28,11 @@ plot_interaction_network <- function(focal_plant = NULL, ...) {
   }
 
   # --- 2. Construct the Interaction Matrix ---
-  # We'll use the standardized 'rate' as the weight of the interaction
   network_matrix <- interaction_subset %>%
-    # Group by plant and pollinator, summing rates across all other variables
+    # --- FIX: Explicitly remove rows with no plant code ---
+    dplyr::filter(!is.na(.data$plant_code)) %>%
     dplyr::group_by(.data$plant_code, .data$pollinator_id) %>%
     dplyr::summarise(total_rate = sum(.data$rate, na.rm = TRUE), .groups = 'drop') %>%
-    # Create the wide matrix with plants as rows and pollinators as columns
     tidyr::pivot_wider(
       names_from = .data$pollinator_id,
       values_from = .data$total_rate,
@@ -40,22 +41,19 @@ plot_interaction_network <- function(focal_plant = NULL, ...) {
     tibble::column_to_rownames(var = "plant_code")
 
   # --- 3. Set Colors for Focal Species Highlight ---
-  # Default colors
+  # (This section is unchanged)
   plant_color <- "lightseagreen"
   pollinator_color <- "lightcoral"
-  interaction_color <- rgb(150, 150, 150, max = 255, alpha = 60) # Semi-transparent grey
+  interaction_color <- rgb(150, 150, 150, max = 255, alpha = 60)
 
   if (!is.null(focal_plant) && focal_plant %in% rownames(network_matrix)) {
-    # If a focal plant is specified, create a color vector
     plant_color <- ifelse(rownames(network_matrix) == focal_plant, "gold", "lightseagreen")
-
-    # Find pollinators that interact with the focal plant
     focal_pollinators <- colnames(network_matrix)[network_matrix[focal_plant, ] > 0]
     pollinator_color <- ifelse(colnames(network_matrix) %in% focal_pollinators, "gold", "lightcoral")
   }
 
   # --- 4. Plot the Network ---
-  # Use try() to catch potential errors from plotweb if the matrix is too sparse
+  # (This section is unchanged)
   try(
     bipartite::plotweb(
       network_matrix,
