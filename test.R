@@ -726,9 +726,15 @@ print(p_year)
 
 
 
+##  pollen network plotting function ####
 
-
-
+# Make nodes bigger (factor of 10) and edges thicker (factor of 1)
+plot_pollen_network(
+  years = 24,
+  focal_plant = "Suc_pra",
+  vertex_size_transform = function(pollen) 3* log(pollen),
+  edge_width_transform = function(weight) 1 * log(weight)
+)
 
 
 
