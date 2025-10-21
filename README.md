@@ -473,12 +473,14 @@ You provide the function with the interaction data and a time variable to compar
 
 This can be done for the entire community (`level = "community"`) or for individual plant species (`level = "species"`), creating either a single trend line or a "spaghetti plot" with a line for each species.
 
-  ------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ### Pollen Deposition Analysis
+
 This package includes data on pollen deposition and a function to visualize it.
 
 #### Dataset: `pollen_deposition`
+
 This data frame contains counts of conspecific and heterospecific pollen grains found on individual stigmas of *Succisa pratensis*.
 
 -   `id`: A unique identifier for each stigma.
@@ -496,6 +498,7 @@ This data frame contains counts of conspecific and heterospecific pollen grains 
 -   `day`: The day of collection (within the month of August).
 
 #### Visualization Function: `plot_pollen_deposition()`
+
 This function creates side-by-side violin plots to compare the distributions of conspecific vs. heterospecific pollen loads.
 
 -   **How it works**: The function takes the `pollen_deposition` data and pivots it into a long format to separate "Conspecific" and "Heterospecific" pollen counts. It then generates violin plots showing the distribution of these counts.
@@ -507,3 +510,107 @@ This function creates side-by-side violin plots to compare the distributions of 
     -   `add_stats`: A logical value (`TRUE` by default). If `TRUE`, it performs a **paired Wilcoxon test** within each group (e.g., within each year) to determine if there is a significant difference between the number of conspecific and heterospecific pollen grains.
 
     -   `colors`: Allows you to customize the colors of the violin plots.
+
+------------------------------------------------------------------------
+
+### Plant-Centric Pollen Sharing Network: `plot_pollen_network()`
+
+This function visualizes the pollen co-deposition network among plant species, answering the question: "Which plants have their pollen deposited on the same stigmas?" It creates a circular plot where plants are nodes and the connections between them represent shared stigmas.
+
+#### How the Network is Constructed
+
+The visualization is the result of a two-step process that transforms a list of pollen observations into a structured network.
+
+1.  **Bipartite (Two-Mode) Network**: First, the function creates an **incidence matrix**, which represents a bipartite network. In this network, there are two distinct types of nodes: stigmas and plant species. A link exists from a plant to a stigma if that plant's pollen was found on that stigma.
+
+2.  **Unipartite (One-Mode) Projection**: The bipartite network is then "projected" into a plant-only network. The new network contains only one type of node (plant species). An edge is drawn between two plant species if they are linked to the same stigma in the original bipartite network. The weight of this new edge is the count of all the stigmas they shared.
+
+#### Interpreting the Visualization
+
+The final circular plot encodes important information in the size of its nodes (vertices) and the width of its connections (edges).
+
+**Nodes (Vertices)**
+
+-   **What they are**: Each node represents a unique plant species present in the dataset for the selected years.
+
+-   **Node Size**: The size of a node is proportional to the total prevalence of that plant's pollen across all sampled stigmas. It is a measure of the species' overall contribution to the pollen pool. The node size is based on the total pollen count (\$P_i\$) for each plant species \$i\$, calculated as the column sum from the incidence matrix:
+
+$$  P_i = \sum_{j=1}^{S} M_{ji}  $$
+
+Where:
+
+-   $S$ is the total number of stigmas sampled.
+-   $M_{ji}$ is 1 if pollen from plant $i$ was found on stigma $j$, and 0 otherwise.
+
+##### Edges (Links)
+
+What they are: An edge between two plant species (e.g., Plant A and Plant B) indicates that their pollen was found together on one or more of the same stigmas.
+
+Edge Width: The width of the edge is directly proportional to the number of stigmas on which the two species' pollen co-occurred. A thicker line signifies a stronger connection in the pollen-sharing network. The edge weight ($W_{ij}$) between plant $i$ and plant $j$ is calculated during the projection:
+
+$$W_{ij} = \sum_{k=1}^{S} (M_{ki} \times M_{kj})$$
+
+Where:
+
+-   $S$ is the total number of stigmas.
+
+-   The term $(M_{ki} \times M_{kj})$ equals 1 only if both plant $i$ and plant $j$ have pollen on stigma $k$, and 0 otherwise.
+
+Key Parameters
+
+years: A numeric vector of years to include in the analysis.
+
+focal_plant: A character string of a plant species code (e.g., "Suc_pra"). If provided, this plant's node and its direct connections will be highlighted.
+
+colors: A named list to customize the colors of the nodes, edges, and highlighted elements.
+
+vertex_size_transform: A function that takes the vector of total pollen counts (total_pollen) and returns a vector of node sizes. Defaults to function(pollen) 5 \* sqrt(pollen).
+
+edge_width_transform: A function that takes the vector of edge weights (co-occurrence counts) and returns a vector of edge widths. Defaults to function(weight) 0.5 \* weight.
+
+##### Usage Examples
+
+Default Plot
+
+This produces the standard plot with the default square-root and linear scaling.
+
+```{r}
+plot_pollen_network(years = 2021:2023, focal_plant = "Suc_pra")
+
+```
+
+**Constant Scaling**
+
+To make nodes larger and edges more prominent, you can increase the multipliers.
+
+```{r}
+plot_pollen_network(
+  years = 2021:2023,
+  vertex_size_transform = function(pollen) 10 * sqrt(pollen),
+  edge_width_transform = function(weight) 2 * weight
+)
+```
+
+**Logarithmic Scaling**
+
+If data is highly skewed, a log transform can make the visualization more balanced. We add 1 to avoid `log(0)`.
+
+```{r}
+plot_pollen_network(
+  years = 2021:2023,
+  vertex_size_transform = function(pollen) 8 * log(pollen + 1),
+  edge_width_transform = function(weight) 3 * log(weight + 1)
+)
+```
+
+**Fixed Sizes**
+
+To remove the influence of abundance and focus only on network structure.
+
+```{r}
+plot_pollen_network(
+  years = 2021:2023,
+  vertex_size_transform = function(pollen) 15, # All nodes are size 15
+  edge_width_transform = function(weight) 2   # All edges are width 2
+)
+```
