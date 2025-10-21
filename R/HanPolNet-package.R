@@ -1,7 +1,7 @@
 #' HanPolNet: A package for analyzing plant-pollinator interaction data
 #'
-#' This package contains the data and functions used in the
-#' Pollinators of Handrkov project. It provides plant abundance data, interaction
+#' This package contains the data and functions used in the manuscript
+#' <Your Manuscript Title>. It provides plant abundance data, interaction
 #' records, and tools to filter and analyze interannual changes.
 #'
 #' @author Jakub Štenc (aut, cre).

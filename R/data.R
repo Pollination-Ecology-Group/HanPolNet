@@ -81,18 +81,3 @@
 #'   \item{day}{The day of collection within August.}
 #' }
 "pollen_deposition"
-
-#' Pollen Co-deposition Network Data
-#'
-#' A tidy data frame of pollen counts from Succisa pratensis stigmas, showing
-#' which plant pollen types co-occur.
-#'
-#' @format A data frame with one row per pollen type per stigma.
-#' \describe{
-#'   \item{stigma_id}{A unique identifier for each stigma.}
-#'   \item{year}{The year of collection.}
-#'   \item{inflorescence_id}{Identifier for the inflorescence.}
-#'   \item{plant_code}{The code for the plant species from which the pollen originated.}
-#'   \item{pollen_count}{The number of pollen grains of that type on the stigma.}
-#' }
-"pollen_network_data"
